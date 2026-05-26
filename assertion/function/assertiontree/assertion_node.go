@@ -73,33 +73,27 @@ type assertionNodeCommon struct {
 	consumeTriggers []*annotation.ConsumeTrigger
 }
 
-func (n *assertionNodeCommon) Parent() AssertionNode { return n.parent }
+func (n *assertionNodeCommon) Parent() AssertionNode {
+	_ = "STUB: not implemented"
+	return *new(AssertionNode)
+}
 
-func (n *assertionNodeCommon) Children() []AssertionNode { return n.children }
+func (n *assertionNodeCommon) Children() []AssertionNode { _ = "STUB: not implemented"; return nil }
 
 func (n *assertionNodeCommon) ConsumeTriggers() []*annotation.ConsumeTrigger {
-	return n.consumeTriggers
+	_ = "STUB: not implemented"
+	return nil
 }
 
-func (n *assertionNodeCommon) SetParent(other AssertionNode) { n.parent = other }
+func (n *assertionNodeCommon) SetParent(other AssertionNode) { _ = "STUB: not implemented"; return }
 
-func (n *assertionNodeCommon) SetChildren(nodes []AssertionNode) { n.children = nodes }
+func (n *assertionNodeCommon) SetChildren(nodes []AssertionNode) { _ = "STUB: not implemented"; return }
 
 func (n *assertionNodeCommon) SetConsumeTriggers(triggers []*annotation.ConsumeTrigger) {
-	n.consumeTriggers = triggers
+	_ = "STUB: not implemented"
+	return
 }
 
-func (n *assertionNodeCommon) Root() *RootAssertionNode {
-	if n == nil || n.parent == nil {
-		return nil
-	}
-	return n.parent.Root()
-}
+func (n *assertionNodeCommon) Root() *RootAssertionNode { _ = "STUB: not implemented"; return nil }
 
-func (n *assertionNodeCommon) Size() int {
-	size := 1 + len(n.ConsumeTriggers())
-	for _, child := range n.Children() {
-		size += child.Size()
-	}
-	return size
-}
+func (n *assertionNodeCommon) Size() int { _ = "STUB: not implemented"; return 0 }

@@ -45,58 +45,21 @@ type OrderedMap[K comparable, V any] struct {
 }
 
 // New creates a new OrderedMap.
-func New[K comparable, V any]() *OrderedMap[K, V] {
-	return &OrderedMap[K, V]{inner: make(map[K]*Pair[K, V])}
-}
+func New[K comparable, V any]() *OrderedMap[K, V] { _ = "STUB: not implemented"; return nil }
 
 // Value returns the value stored in the map for the key, or the zero value if the key is not found.
 // It is the same as Load, but without the additional bool.
-func (m *OrderedMap[K, V]) Value(key K) V {
-	m.rehydrate()
-
-	if p := m.inner[key]; p != nil {
-		return p.Value
-	}
-	var v V
-	return v
-}
+func (m *OrderedMap[K, V]) Value(key K) V { _ = "STUB: not implemented"; return *new(V) }
 
 // Load returns the value stored in the map for the key, with an additional bool indicating if
 // the key was found.
-func (m *OrderedMap[K, V]) Load(key K) (V, bool) {
-	m.rehydrate()
-
-	if p := m.inner[key]; p != nil {
-		return p.Value, true
-	}
-	var v V
-	return v, false
-}
+func (m *OrderedMap[K, V]) Load(key K) (V, bool) { _ = "STUB: not implemented"; return *new(V), false }
 
 // Store stores the value in the map for the key, overwriting the previous value if the key exists.
-func (m *OrderedMap[K, V]) Store(key K, value V) {
-	m.rehydrate()
-
-	if p := m.inner[key]; p != nil {
-		p.Value = value
-		return
-	}
-	p := &Pair[K, V]{Key: key, Value: value}
-	m.Pairs = append(m.Pairs, p)
-	m.inner[key] = p
-}
+func (m *OrderedMap[K, V]) Store(key K, value V) { _ = "STUB: not implemented"; return }
 
 // rehydrate ensures that the inner map is up-to-date with the Pairs slice. This can happen when
 // the OrderedMap is serialized and deserialized via gob encoding (the inner map is unexported and
 // hence ignored from serialization). rehydrate must be called before accessing the inner map
 // after deserialization.
-func (m *OrderedMap[K, V]) rehydrate() {
-	if len(m.Pairs) == len(m.inner) {
-		return
-	}
-
-	m.inner = make(map[K]*Pair[K, V], len(m.Pairs))
-	for _, p := range m.Pairs {
-		m.inner[p.Key] = p
-	}
-}
+func (m *OrderedMap[K, V]) rehydrate() { _ = "STUB: not implemented"; return }

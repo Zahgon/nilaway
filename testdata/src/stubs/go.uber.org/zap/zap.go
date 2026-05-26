@@ -5,7 +5,6 @@ func NewProduction() (*Logger, error) {
 	return &Logger{}, nil
 }
 
-
 // Logger is a logger interface that provides structured, leveled logging.
 type Logger struct{}
 

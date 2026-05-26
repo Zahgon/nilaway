@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
 // This package aims to test automated inferred function contracts in full inference mode.
 
 package inference

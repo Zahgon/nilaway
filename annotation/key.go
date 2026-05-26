@@ -15,7 +15,6 @@
 package annotation
 
 import (
-	"fmt"
 	"go/token"
 	"go/types"
 )
@@ -54,33 +53,24 @@ type FieldAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val
 func (k *FieldAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if val, ok := annMap.CheckFieldAnn(k.FieldDecl); ok {
-		return val, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (k *FieldAnnotationKey) Object() types.Object {
-	return k.FieldDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (k *FieldAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*FieldAnnotationKey); ok {
-		return *k == *other
-	}
-	return false
-}
+func (k *FieldAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (k *FieldAnnotationKey) copy() Key {
-	copyKey := *k
-	return &copyKey
-}
+func (k *FieldAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (k *FieldAnnotationKey) String() string {
-	return fmt.Sprintf("Field %s", k.FieldDecl.Name())
-}
+func (k *FieldAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // CallSiteParamAnnotationKey is similar to ParamAnnotationKey but it represents the site in the
 // caller where the actual argument is passed to the called function. For the same parameter of the
@@ -94,93 +84,56 @@ type CallSiteParamAnnotationKey struct {
 
 // ParamName returns the *types.Var naming the parameter associate with this key.
 // nilable(result 0)
-func (pk *CallSiteParamAnnotationKey) ParamName() *types.Var {
-	return pk.FuncDecl.Type().(*types.Signature).Params().At(pk.ParamNum)
-}
+func (pk *CallSiteParamAnnotationKey) ParamName() *types.Var { _ = "STUB: not implemented"; return nil }
 
 // Lookup looks this key up in the passed map, returning a Val.
 func (pk *CallSiteParamAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if paramVal, ok := annMap.CheckFuncCallSiteParamAnn(pk); ok {
-		return paramVal, true
-	}
-	// Revert to the function's ParamAnnotationKey look up if there is no call-site annotation.
-	if paramVal, ok := annMap.CheckFuncParamAnn(pk.FuncDecl, pk.ParamNum); ok {
-		return paramVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
+
+// Revert to the function's ParamAnnotationKey look up if there is no call-site annotation.
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating.
 func (pk *CallSiteParamAnnotationKey) Object() types.Object {
-	return pk.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
 func (pk *CallSiteParamAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*CallSiteParamAnnotationKey); ok {
-		return *pk == *other
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
-func (pk *CallSiteParamAnnotationKey) copy() Key {
-	copyKey := *pk
-	return &copyKey
-}
+func (pk *CallSiteParamAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (pk *CallSiteParamAnnotationKey) String() string {
-	argname := ""
-	if pk.ParamName() != nil {
-		argname = fmt.Sprintf(": '%s'", pk.ParamName().Name())
-	}
-	return fmt.Sprintf("Param %d%s of Function %s at Location %s",
-		pk.ParamNum, argname, pk.FuncDecl.Name(), pk.Location.String())
-}
+func (pk *CallSiteParamAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // MinimalString returns a string representation for this CallSiteParamAnnotationKey consisting
 // only of the word "arg" followed by the name of the parameter, if named, or its position
 // otherwise.
-func (pk *CallSiteParamAnnotationKey) MinimalString() string {
-	if pk.ParamName() != nil && len(pk.ParamName().Name()) > 0 {
-		return fmt.Sprintf("arg `%s`", pk.ParamName().Name())
-	}
-	return fmt.Sprintf("arg %d", pk.ParamNum)
-}
+func (pk *CallSiteParamAnnotationKey) MinimalString() string { _ = "STUB: not implemented"; return "" }
 
 // ParamNameString returns the name of this parameter, if named, or a placeholder string otherwise.
 func (pk *CallSiteParamAnnotationKey) ParamNameString() string {
-	if pk.ParamName() != nil {
-		return pk.ParamName().Name()
-	}
-	return fmt.Sprintf("<unnamed param %d>", pk.ParamNum)
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // NewCallSiteParamKey returns a new instance of CallSiteParamAnnotationKey constructed along with
 // validation that its passed argument number is valid for the passed function declaration.
 func NewCallSiteParamKey(
 	fdecl *types.Func, num int, location token.Position) *CallSiteParamAnnotationKey {
-	sig := fdecl.Type().(*types.Signature)
-	// for variadic functions - "round down" their argument number to the variadic arg
-	if sig.Variadic() && num >= sig.Params().Len()-1 {
-		return &CallSiteParamAnnotationKey{
-			FuncDecl: fdecl,
-			ParamNum: sig.Params().Len() - 1,
-			Location: location,
-		}
-	}
-
-	// for regular functions - panic if arg num too high
-	if sig.Params().Len() <= num {
-		panic(fmt.Sprintf(
-			"no such parameter number %d - out of bounds for function %s with %d parameters",
-			sig.Params().Len(), fdecl.Name(), num))
-	}
-	return &CallSiteParamAnnotationKey{
-		FuncDecl: fdecl,
-		ParamNum: num,
-		Location: location,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// for variadic functions - "round down" their argument number to the variadic arg
+
+// for regular functions - panic if arg num too high
 
 // ParamAnnotationKey allows the Lookup of a function parameter's Annotation in the Annotation map
 // Only construct these using ParamKeyFromArgNum and ParamKeyFromName
@@ -191,99 +144,52 @@ type ParamAnnotationKey struct {
 
 // ParamName returns the *types.Var naming the parameter associate with this key
 // nilable(result 0)
-func (pk *ParamAnnotationKey) ParamName() *types.Var {
-	return pk.FuncDecl.Type().(*types.Signature).Params().At(pk.ParamNum)
-}
+func (pk *ParamAnnotationKey) ParamName() *types.Var { _ = "STUB: not implemented"; return nil }
 
 // ParamKeyFromArgNum returns a new instance of ParamAnnotationKey constructed along with validation
 // that its passed argument number is valid for the passed function declaration
 func ParamKeyFromArgNum(fdecl *types.Func, num int) *ParamAnnotationKey {
-	sig := fdecl.Type().(*types.Signature)
-	// for variadic functions - "round down" their argument number to the variadic arg
-	if sig.Variadic() && num >= sig.Params().Len()-1 {
-		return &ParamAnnotationKey{
-			FuncDecl: fdecl,
-			ParamNum: sig.Params().Len() - 1,
-		}
-	}
-
-	// for regular functions - panic if arg num too high
-	if sig.Params().Len() <= num {
-		panic(fmt.Sprintf("no such parameter number %d - out of bounds for function %s with %d parameters", sig.Params().Len(), fdecl.Name(), num))
-	}
-	return &ParamAnnotationKey{
-		FuncDecl: fdecl,
-		ParamNum: num,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// for variadic functions - "round down" their argument number to the variadic arg
+
+// for regular functions - panic if arg num too high
 
 // ParamKeyFromName returns a new instance of ParamAnnotationKey constructed from the name of the parameter
 func ParamKeyFromName(fdecl *types.Func, paramName *types.Var) *ParamAnnotationKey {
-	sig := fdecl.Type().(*types.Signature)
-
-	for i := 0; i < sig.Params().Len(); i++ {
-		if sig.Params().At(i) == paramName {
-			return &ParamAnnotationKey{
-				FuncDecl: fdecl,
-				ParamNum: i,
-			}
-		}
-	}
-	panic(fmt.Sprintf("no such parameter %s for function %s", paramName.String(), fdecl.String()))
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // Lookup looks this key up in the passed map, returning a Val
 func (pk *ParamAnnotationKey) Lookup(annMap Map) (Val, bool) {
-
-	if paramVal, ok := annMap.CheckFuncParamAnn(pk.FuncDecl, pk.ParamNum); ok {
-		return paramVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (pk *ParamAnnotationKey) Object() types.Object {
-	return pk.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (pk *ParamAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*ParamAnnotationKey); ok {
-		return *pk == *other
-	}
-	return false
-}
+func (pk *ParamAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (pk *ParamAnnotationKey) copy() Key {
-	copyKey := *pk
-	return &copyKey
-}
+func (pk *ParamAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (pk *ParamAnnotationKey) String() string {
-	argname := ""
-	if pk.ParamName() != nil {
-		argname = fmt.Sprintf(": '%s'", pk.ParamName().Name())
-	}
-	return fmt.Sprintf("Param %d%s of Function %s",
-		pk.ParamNum, argname, pk.FuncDecl.Name())
-}
+func (pk *ParamAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // MinimalString returns a string representation for this ParamAnnotationKey consisting only
 // of the word "arg" followed by the name of the parameter, if named, or its position otherwise
-func (pk *ParamAnnotationKey) MinimalString() string {
-	if pk.ParamName() != nil && len(pk.ParamName().Name()) > 0 {
-		return fmt.Sprintf("arg `%s`", pk.ParamName().Name())
-	}
-	return fmt.Sprintf("arg %d", pk.ParamNum)
-}
+func (pk *ParamAnnotationKey) MinimalString() string { _ = "STUB: not implemented"; return "" }
 
 // ParamNameString returns the name of this parameter, if named, or a placeholder string otherwise
-func (pk *ParamAnnotationKey) ParamNameString() string {
-	if pk.ParamName() != nil {
-		return pk.ParamName().Name()
-	}
-	return fmt.Sprintf("<unnamed param %d>", pk.ParamNum)
-}
+func (pk *ParamAnnotationKey) ParamNameString() string { _ = "STUB: not implemented"; return "" }
 
 // CallSiteRetAnnotationKey is similar to RetAnnotationKey, but it represents the site in the
 // caller where the actual result is returned from the function. For the same return result of the
@@ -297,47 +203,32 @@ type CallSiteRetAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val.
 func (rk *CallSiteRetAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if retVal, ok := annMap.CheckFuncCallSiteRetAnn(rk); ok {
-		return retVal, true
-	}
-	// Revert to the function's RetAnnotationKey look up if there is no call-site annotation.
-	if paramVal, ok := annMap.CheckFuncRetAnn(rk.FuncDecl, rk.RetNum); ok {
-		return paramVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
+
+// Revert to the function's RetAnnotationKey look up if there is no call-site annotation.
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating.
 func (rk *CallSiteRetAnnotationKey) Object() types.Object {
-	return rk.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (rk *CallSiteRetAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*CallSiteRetAnnotationKey); ok {
-		return *rk == *other
-	}
-	return false
-}
+func (rk *CallSiteRetAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (rk *CallSiteRetAnnotationKey) copy() Key {
-	copyKey := *rk
-	return &copyKey
-}
+func (rk *CallSiteRetAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (rk *CallSiteRetAnnotationKey) String() string {
-	return fmt.Sprintf("Result %d of Function %s at Location %v",
-		rk.RetNum, rk.FuncDecl.Name(), rk.Location)
-}
+func (rk *CallSiteRetAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // NewCallSiteRetKey returns a new instance of CallSiteRetAnnotationKey constructed from the name
 // of the parameter.
 func NewCallSiteRetKey(fdecl *types.Func, retNum int, location token.Position) *CallSiteRetAnnotationKey {
-	return &CallSiteRetAnnotationKey{
-		FuncDecl: fdecl,
-		RetNum:   retNum,
-		Location: location,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // RetAnnotationKey allows the Lookup of a function's return Annotation in the Annotation Map
@@ -348,41 +239,29 @@ type RetAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val
 func (rk *RetAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if retVal, ok := annMap.CheckFuncRetAnn(rk.FuncDecl, rk.RetNum); ok {
-		return retVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (rk *RetAnnotationKey) Object() types.Object {
-	return rk.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (rk *RetAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*RetAnnotationKey); ok {
-		return *rk == *other
-	}
-	return false
-}
+func (rk *RetAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (rk *RetAnnotationKey) copy() Key {
-	copyKey := *rk
-	return &copyKey
-}
+func (rk *RetAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (rk *RetAnnotationKey) String() string {
-	return fmt.Sprintf("Result %d of Function %s",
-		rk.RetNum, rk.FuncDecl.Name())
-}
+func (rk *RetAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // RetKeyFromRetNum returns a new instance of RetAnnotationKey constructed from the name of the parameter
 func RetKeyFromRetNum(fdecl *types.Func, retNum int) *RetAnnotationKey {
-	return &RetAnnotationKey{
-		FuncDecl: fdecl,
-		RetNum:   retNum,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // TypeNameAnnotationKey allows the Lookup of a named type annotations in the Annotation Map
@@ -392,33 +271,24 @@ type TypeNameAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val
 func (tk *TypeNameAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if typeVal, ok := annMap.CheckDeepTypeAnn(tk.TypeDecl); ok {
-		return typeVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (tk *TypeNameAnnotationKey) Object() types.Object {
-	return tk.TypeDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (tk *TypeNameAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*TypeNameAnnotationKey); ok {
-		return *tk == *other
-	}
-	return false
-}
+func (tk *TypeNameAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (tk *TypeNameAnnotationKey) copy() Key {
-	copyKey := *tk
-	return &copyKey
-}
+func (tk *TypeNameAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (tk *TypeNameAnnotationKey) String() string {
-	return fmt.Sprintf("Type %s", tk.TypeDecl.Name())
-}
+func (tk *TypeNameAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // GlobalVarAnnotationKey allows the Lookup of a global variable's annotations in the Annotation Map
 type GlobalVarAnnotationKey struct {
@@ -427,33 +297,23 @@ type GlobalVarAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val
 func (gk *GlobalVarAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if typeVal, ok := annMap.CheckGlobalVarAnn(gk.VarDecl); ok {
-		return typeVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (gk *GlobalVarAnnotationKey) Object() types.Object {
-	return gk.VarDecl
+	_ = "STUB: not implemented"
+
+	// equals returns true if the passed key is equal to this key
+	return *new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (gk *GlobalVarAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*GlobalVarAnnotationKey); ok {
-		return *gk == *other
-	}
-	return false
-}
+func (gk *GlobalVarAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (gk *GlobalVarAnnotationKey) copy() Key {
-	copyKey := *gk
-	return &copyKey
-}
+func (gk *GlobalVarAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (gk *GlobalVarAnnotationKey) String() string {
-	return fmt.Sprintf("Global Variable %s", gk.VarDecl.Name())
-}
+func (gk *GlobalVarAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // LocalVarAnnotationKey allows the Lookup of a local variable's annotations in the Annotation Map
 type LocalVarAnnotationKey struct {
@@ -463,29 +323,21 @@ type LocalVarAnnotationKey struct {
 // Lookup looks this key up in the passed map, returning a Val
 // TODO: Add support for local variables with no inference (Currently, only works with inference)
 func (lk *LocalVarAnnotationKey) Lookup(_ Map) (Val, bool) {
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (lk *LocalVarAnnotationKey) Object() types.Object {
-	return lk.VarDecl
+	_ = "STUB: not implemented"
+	return *new(types.Object)
 }
 
-func (lk *LocalVarAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*LocalVarAnnotationKey); ok {
-		return *lk == *other
-	}
-	return false
-}
+func (lk *LocalVarAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (lk *LocalVarAnnotationKey) copy() Key {
-	copyKey := *lk
-	return &copyKey
-}
+func (lk *LocalVarAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (lk *LocalVarAnnotationKey) String() string {
-	return fmt.Sprintf("Local Variable %s", lk.VarDecl.Name())
-}
+func (lk *LocalVarAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // RetFieldAnnotationKey allows the Lookup of the Annotation on a specific field within a function's return of struct
 // (or pointer to struct) type, in the Annotation Map. This key is only effective when the struct initialization checking
@@ -503,39 +355,28 @@ type RetFieldAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val.
 func (rf *RetFieldAnnotationKey) Lookup(_ Map) (Val, bool) {
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (rf *RetFieldAnnotationKey) Object() types.Object {
-	return rf.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (rf *RetFieldAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*RetFieldAnnotationKey); ok {
-		return *rf == *other
-	}
-	return false
-}
+func (rf *RetFieldAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (rf *RetFieldAnnotationKey) copy() Key {
-	copyKey := *rf
-	return &copyKey
-}
+func (rf *RetFieldAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
 // String returns a string representation of this annotation key
 func (rf *RetFieldAnnotationKey) String() string {
+	_ = "STUB: not implemented"
 	// If the function has a receiver, we add info in the error message
-	if rec, ok := rf.FuncDecl.Type().(*types.Signature); ok {
-		if rec.Recv() != nil {
-			return fmt.Sprintf("Field %s of Result %d of Function %s with receiver %s",
-				rf.FieldDecl.Name(), rf.RetNum, rf.FuncDecl.Name(), rec.Recv().Name())
-		}
-	}
-
-	return fmt.Sprintf("Field %s of Result %d of Function %s",
-		rf.FieldDecl.Name(), rf.RetNum, rf.FuncDecl.Name())
+	return ""
 }
 
 // EscapeFieldAnnotationKey allows the Lookup of a field's Annotation in the Annotation map
@@ -559,30 +400,24 @@ type EscapeFieldAnnotationKey struct {
 // Currently, the annotation key is used only with inference
 // TODO: This should be updated on supporting no-infer with struct initialization
 func (ek *EscapeFieldAnnotationKey) Lookup(_ Map) (Val, bool) {
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (ek *EscapeFieldAnnotationKey) Object() types.Object {
-	return ek.FieldDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (ek *EscapeFieldAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*EscapeFieldAnnotationKey); ok {
-		return *ek == *other
-	}
-	return false
-}
+func (ek *EscapeFieldAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (ek *EscapeFieldAnnotationKey) copy() Key {
-	copyKey := *ek
-	return &copyKey
-}
+func (ek *EscapeFieldAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (ek *EscapeFieldAnnotationKey) String() string {
-	return fmt.Sprintf("escaped Field %s", ek.FieldDecl.Name())
-}
+func (ek *EscapeFieldAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // ParamFieldAnnotationKey allows the Lookup of Annotation of a function parameter's fields in the
 // Annotation map.
@@ -606,65 +441,35 @@ type ParamFieldAnnotationKey struct {
 const ReceiverParamIndex = -1
 
 // IsReceiver returns true if the key is corresponding to a receiver of a method
-func (pf *ParamFieldAnnotationKey) IsReceiver() bool {
-	return pf.ParamNum == ReceiverParamIndex
-}
+func (pf *ParamFieldAnnotationKey) IsReceiver() bool { _ = "STUB: not implemented"; return false }
 
 // ParamName returns the *types.Var naming the parameter associate with this key
 // nilable(result 0)
-func (pf *ParamFieldAnnotationKey) ParamName() *types.Var {
-
-	if pf.IsReceiver() {
-		return pf.FuncDecl.Type().(*types.Signature).Recv()
-	}
-	return pf.FuncDecl.Type().(*types.Signature).Params().At(pf.ParamNum)
-}
+func (pf *ParamFieldAnnotationKey) ParamName() *types.Var { _ = "STUB: not implemented"; return nil }
 
 // Lookup looks this key up in the passed map, returning a Val
 // Currently, the annotation key is used only with inference
 // TODO: This should be updated on supporting no-infer with struct initialization
 func (pf *ParamFieldAnnotationKey) Lookup(_ Map) (Val, bool) {
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (pf *ParamFieldAnnotationKey) Object() types.Object {
-	return pf.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// equals returns true if the passed key is equal to this key
+	new(types.Object)
 }
 
-// equals returns true if the passed key is equal to this key
-func (pf *ParamFieldAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*ParamFieldAnnotationKey); ok {
-		return *pf == *other
-	}
-	return false
-}
+func (pf *ParamFieldAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (pf *ParamFieldAnnotationKey) copy() Key {
-	copyKey := *pf
-	return &copyKey
-}
+func (pf *ParamFieldAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
 // String returns a string representation of this annotation key for ParamFieldAnnotationKey
-func (pf *ParamFieldAnnotationKey) String() string {
-	argName := ""
-	if pf.ParamName() != nil {
-		argName = fmt.Sprintf(": '%s'", pf.ParamName().Name())
-	}
-
-	paramSite := "at input"
-	if pf.IsTrackingSideEffect {
-		paramSite = "at output"
-	}
-
-	if pf.IsReceiver() {
-		return fmt.Sprintf("Field %s of Receiver%s %s of Method %s", pf.FieldDecl.Name(), argName, paramSite, pf.FuncDecl.Name())
-	}
-
-	return fmt.Sprintf("Field %s of Param %d%s %s of Function %s", pf.FieldDecl.Name(),
-		pf.ParamNum, argName, paramSite, pf.FuncDecl.Name())
-
-}
+func (pf *ParamFieldAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }
 
 // RecvAnnotationKey allows the Lookup of a method's receiver Annotation in the Annotation map
 type RecvAnnotationKey struct {
@@ -673,40 +478,27 @@ type RecvAnnotationKey struct {
 
 // Lookup looks this key up in the passed map, returning a Val
 func (rk *RecvAnnotationKey) Lookup(annMap Map) (Val, bool) {
-	if retVal, ok := annMap.CheckFuncRecvAnn(rk.FuncDecl); ok {
-		return retVal, true
-	}
-	return nonAnnotatedDefault, false
+	_ = "STUB: not implemented"
+	return *new(Val), false
 }
 
 // Package returns the package containing the site of this annotation key
-func (rk *RecvAnnotationKey) Package() *types.Package {
-	return rk.FuncDecl.Pkg()
-}
+func (rk *RecvAnnotationKey) Package() *types.Package { _ = "STUB: not implemented"; return nil }
 
 // Object returns the types.Object that this annotation can best be interpreted as annotating
 func (rk *RecvAnnotationKey) Object() types.Object {
-	return rk.FuncDecl
+	_ = "STUB: not implemented"
+	return *
+
+	// Exported returns true iff this annotation is observable by downstream packages
+	new(types.Object)
 }
 
-// Exported returns true iff this annotation is observable by downstream packages
-func (rk *RecvAnnotationKey) Exported() bool {
-	return rk.FuncDecl.Exported()
-}
+func (rk *RecvAnnotationKey) Exported() bool { _ = "STUB: not implemented"; return false }
 
 // equals returns true if the passed key is equal to this key
-func (rk *RecvAnnotationKey) equals(other Key) bool {
-	if other, ok := other.(*RecvAnnotationKey); ok {
-		return *rk == *other
-	}
-	return false
-}
+func (rk *RecvAnnotationKey) equals(other Key) bool { _ = "STUB: not implemented"; return false }
 
-func (rk *RecvAnnotationKey) copy() Key {
-	copyKey := *rk
-	return &copyKey
-}
+func (rk *RecvAnnotationKey) copy() Key { _ = "STUB: not implemented"; return *new(Key) }
 
-func (rk *RecvAnnotationKey) String() string {
-	return fmt.Sprintf("Receiver of Method %s", rk.FuncDecl.Name())
-}
+func (rk *RecvAnnotationKey) String() string { _ = "STUB: not implemented"; return "" }

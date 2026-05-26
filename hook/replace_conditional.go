@@ -29,12 +29,8 @@ import (
 //
 // If the call does not match any known function, nil is returned.
 func ReplaceConditional(pass *analysishelper.EnhancedPass, call *ast.CallExpr) ast.Expr {
-	for sig, act := range _replaceConditionals {
-		if sig.match(pass, call) {
-			return act(pass, call)
-		}
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
 
 type replaceConditionalAction func(pass *analysishelper.EnhancedPass, call *ast.CallExpr) ast.Expr

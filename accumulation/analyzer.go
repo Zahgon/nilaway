@@ -18,18 +18,13 @@
 package accumulation
 
 import (
-	"errors"
-	"fmt"
 	"reflect"
-	"runtime/debug"
 
 	"go.uber.org/nilaway/annotation"
 	"go.uber.org/nilaway/assertion"
-	"go.uber.org/nilaway/assertion/function/assertiontree"
 	"go.uber.org/nilaway/config"
 	"go.uber.org/nilaway/diagnostic"
 	"go.uber.org/nilaway/inference"
-	"go.uber.org/nilaway/util/analysishelper"
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -75,101 +70,57 @@ var Analyzer = &analysis.Analyzer{
 // Lastly, we export the _incremental_ information we have gathered from the analysis of local
 // package for use by downstream packages.
 func run(p *analysis.Pass) (result interface{}, _ error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	// As a last resort, we recover from a panic when running the analyzer, convert the panic to
-	// a diagnostic and return.
-	defer func() {
-		if r := recover(); r != nil {
-			// Deferred functions are executed after a result is generated, so here we modify the
-			// return value `result` in-place.
-			// Diagnostics with invalid positions (<= 0) will be silently suppressed, so here we use 1.
-			d := analysis.Diagnostic{Pos: 1, Message: fmt.Sprintf("INTERNAL PANIC: %s\n%s", r, string(debug.Stack()))}
-			if diagnostics, ok := result.([]analysis.Diagnostic); ok {
-				result = append(diagnostics, d)
-			} else {
-				result = []analysis.Diagnostic{d}
-			}
-		}
-	}()
-
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-	if !conf.IsPkgInScope(pass.Pkg) {
-		// Must return a typed nil since the driver is using reflection to retrieve the result.
-		return ([]analysis.Diagnostic)(nil), nil
-	}
-
-	assertionsResult := pass.ResultOf[assertion.Analyzer].(*analysishelper.Result[[]annotation.FullTrigger])
-	annotationsResult := pass.ResultOf[annotation.Analyzer].(*analysishelper.Result[*annotation.ObservedMap])
-	if err := errors.Join(annotationsResult.Err, assertionsResult.Err); err != nil {
-		// For now, if there are any errors in the sub-analyzers, we directly emit diagnostics on the
-		// errors. However, in the future we could implement error recovery and make use of the partial
-		// information to continue the analysis.
-		// Diagnostics with invalid positions (<= 0) will be silently suppressed, so here we use 1.
-		return []analysis.Diagnostic{{Pos: 1, Message: fmt.Sprintf("INTERNAL ERROR(s):\n%s", err)}}, nil
-	}
-
-	diagnosticEngine := diagnostic.NewEngine(pass)
-
-	// Create an inference engine and observe (load) information from upstream dependencies (i.e.,
-	// mappings between annotation sites and their inferred values).
-	inferenceEngine := inference.NewEngine(pass, diagnosticEngine)
-	inferenceEngine.ObserveUpstream()
-
-	// Determine inference type based on comments in package doc string.
-	mode := inference.DetermineMode(pass)
-
-	// First observe all annotations from annotationsResult (observes only syntactic annotations
-	// for FullInfer mode, otherwise all annotations for NoInfer)
-	inferenceEngine.ObserveAnnotations(annotationsResult.Res, mode)
-
-	var (
-		inferredMap *inference.InferredMap
-		diagnostics []analysis.Diagnostic
-	)
-	switch mode {
-	case inference.FullInfer:
-		// TODO: This is a suppression added for handling of struct field assignments. We plan to add
-		//  object sensitivity to NilAway in the future, which will allow us to be more precise in struct fields'
-		//  handling. Remove this suppression once we have the object sensitivity implemented (issue #339).
-		for _, t := range assertionsResult.Res {
-			if _, ok := t.Consumer.Annotation.(*annotation.FldAssign); ok {
-				// update its producer to be non-nil
-				t.Producer.Annotation = &annotation.ProduceTriggerNever{}
-			}
-		}
-
-		// Incorporate assertions from this package one-by-one into the inferredAnnotationMap, possibly
-		// determining local and upstream sites in the process. This is guaranteed not to determine any
-		// sites unless we really have a reason they have to be determined.
-		inferenceEngine.ObservePackage(assertionsResult.Res)
-		inferredMap = inferenceEngine.InferredMap()
-		diagnostics = diagnosticEngine.Diagnostics(conf.GroupErrorMessages)
-
-	case inference.NoInfer:
-		// In non-inference case - use the classical assertionNode.CheckErrors method to determine error outputs
-		inferredMap = inferenceEngine.InferredMap()
-		checkErrors(assertionsResult.Res, inferredMap, diagnosticEngine)
-		// Retrieve the diagnostics from the engine. Note that we should not group the
-		// diagnostics for easier unit testing.
-		diagnostics = diagnosticEngine.Diagnostics(false /* grouping */)
-
-	default:
-		panic("Invalid mode for running NilAway")
-	}
-
-	// Export the _incremental_ information from this inferred map for analysis of downstream
-	// packages via the Fact mechanism (which [uses gob encoding under the hood]). The custom
-	// GobEncode / GobDecode methods of InferredAnnotationMap ensure that only incremental
-	// information is encoded and exported - KEY for minimizing facts size. Note that we should
-	// _never_ export nil maps / pointers due to [gob encoding]: "Nil pointers are not permitted,
-	// as they have no value.".
-	//
-	// [uses gob encoding under the hood]: https://pkg.go.dev/golang.org/x/tools/go/analysis#hdr-Modular_analysis_with_Facts
-	// [gob encoding]: https://pkg.go.dev/encoding/gob#hdr-Basics
-	inferredMap.Export(pass)
-
-	return diagnostics, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// As a last resort, we recover from a panic when running the analyzer, convert the panic to
+// a diagnostic and return.
+
+// Deferred functions are executed after a result is generated, so here we modify the
+// return value `result` in-place.
+// Diagnostics with invalid positions (<= 0) will be silently suppressed, so here we use 1.
+
+// Must return a typed nil since the driver is using reflection to retrieve the result.
+
+// For now, if there are any errors in the sub-analyzers, we directly emit diagnostics on the
+// errors. However, in the future we could implement error recovery and make use of the partial
+// information to continue the analysis.
+// Diagnostics with invalid positions (<= 0) will be silently suppressed, so here we use 1.
+
+// Create an inference engine and observe (load) information from upstream dependencies (i.e.,
+// mappings between annotation sites and their inferred values).
+
+// Determine inference type based on comments in package doc string.
+
+// First observe all annotations from annotationsResult (observes only syntactic annotations
+// for FullInfer mode, otherwise all annotations for NoInfer)
+
+// TODO: This is a suppression added for handling of struct field assignments. We plan to add
+//  object sensitivity to NilAway in the future, which will allow us to be more precise in struct fields'
+//  handling. Remove this suppression once we have the object sensitivity implemented (issue #339).
+
+// update its producer to be non-nil
+
+// Incorporate assertions from this package one-by-one into the inferredAnnotationMap, possibly
+// determining local and upstream sites in the process. This is guaranteed not to determine any
+// sites unless we really have a reason they have to be determined.
+
+// In non-inference case - use the classical assertionNode.CheckErrors method to determine error outputs
+
+// Retrieve the diagnostics from the engine. Note that we should not group the
+// diagnostics for easier unit testing.
+/* grouping */
+
+// Export the _incremental_ information from this inferred map for analysis of downstream
+// packages via the Fact mechanism (which [uses gob encoding under the hood]). The custom
+// GobEncode / GobDecode methods of InferredAnnotationMap ensure that only incremental
+// information is encoded and exported - KEY for minimizing facts size. Note that we should
+// _never_ export nil maps / pointers due to [gob encoding]: "Nil pointers are not permitted,
+// as they have no value.".
+//
+// [uses gob encoding under the hood]: https://pkg.go.dev/golang.org/x/tools/go/analysis#hdr-Modular_analysis_with_Facts
+// [gob encoding]: https://pkg.go.dev/encoding/gob#hdr-Basics
 
 type conflictHandler interface {
 	AddSingleAssertionConflict(trigger annotation.FullTrigger)
@@ -178,39 +129,21 @@ type conflictHandler interface {
 // checkErrors iterates over a set of full triggers, checking each one against a given annotation
 // map to see if it fails and if so appending it to the returned list.
 func checkErrors(triggers []annotation.FullTrigger, annMap annotation.Map, diagnosticEngine conflictHandler) {
+	_ = "STUB: not implemented"
 	// Filter triggers for error return handling -- inter-procedural and annotations-based (no inference).
 	// (Note that since we are using FilterTriggersForErrorReturn as a preprocessing step here, we can directly use its
 	// first output `filteredTriggers` to check and report errors. The second output of raw `deleted triggers` is not
 	// needed in this situation, and hence suppressed with a blank identifier `_`)
-	filteredTriggers, _ := assertiontree.FilterTriggersForErrorReturn(
-		triggers,
-		func(p *annotation.ProduceTrigger) assertiontree.ProducerNilability {
-			if !p.Annotation.CheckProduce(annMap) {
-				return assertiontree.ProducerIsNonNil
-			}
-			// ProducerNilabilityUnknown is returned here since all we know at this point is that `p` is nilable,
-			// which means that it could be nil, but is not guaranteed to be always nil
-			return assertiontree.ProducerNilabilityUnknown
-		},
-	)
-
-	// Delete all "always safe" special handlers, since they are not meant to be tested for the no infer case
-	finalTriggers := make([]annotation.FullTrigger, 0, len(filteredTriggers))
-	for _, trigger := range filteredTriggers {
-		if c, ok := trigger.Consumer.Annotation.(*annotation.UseAsReturn); ok && c.IsTrackingAlwaysSafe {
-			continue
-		}
-		finalTriggers = append(finalTriggers, trigger)
-	}
-
-	for _, trigger := range finalTriggers {
-		// Skip checking any full triggers we created by duplicating from contracted functions
-		// to the caller function.
-		if !trigger.CreatedFromDuplication && trigger.Check(annMap) {
-			diagnosticEngine.AddSingleAssertionConflict(trigger)
-		}
-	}
+	return
 }
+
+// ProducerNilabilityUnknown is returned here since all we know at this point is that `p` is nilable,
+// which means that it could be nil, but is not guaranteed to be always nil
+
+// Delete all "always safe" special handlers, since they are not meant to be tested for the no infer case
+
+// Skip checking any full triggers we created by duplicating from contracted functions
+// to the caller function.
 
 // This is required to use interface types in facts - see the implementation of GobRegister for the
 // relevant interface implementations that could not be Gob encoded without this call

@@ -199,11 +199,11 @@ func fooUnnamedParam(_ *int) *int {
 func barUnnamedParam1() {
 	var a1 *int
 	b1 := fooUnnamedParam(a1) // nilable(param 0) nonnil(result 0)
-	print(*b1) // No error here.
+	print(*b1)                // No error here.
 }
 
 func barUnnamedParam2() {
 	var a2 *int
 	b2 := fooUnnamedParam(a2) // nilable(param 0) nonnil(result 0)
-	print(*b2) // No error here.
+	print(*b2)                // No error here.
 }

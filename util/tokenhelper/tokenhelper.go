@@ -17,11 +17,8 @@
 package tokenhelper
 
 import (
-	"fmt"
 	"go/token"
 	"os"
-	"path/filepath"
-	"strings"
 )
 
 var _cwd, _cwdErr = os.Getwd()
@@ -29,71 +26,16 @@ var _cwd, _cwdErr = os.Getwd()
 // RelToCwd returns the relative path of the given filename with respect to the current
 // working directory (retrieved during initialization). If the filename is not a child of
 // the current working directory, it returns the filename itself.
-func RelToCwd(filename string) string {
-	if _cwdErr != nil {
-		panic("failed to get current working directory: " + _cwdErr.Error())
-	}
-	rel, err := filepath.Rel(_cwd, filename)
-	if err == nil {
-		return rel
-	}
-	return filename
-}
+func RelToCwd(filename string) string { _ = "STUB: not implemented"; return "" }
 
 // Converse returns the converse of the given token. It panics if the token is not a valid comparison.
-func Converse(t token.Token) token.Token {
-	switch t {
-	case token.EQL:
-		return token.EQL
-	case token.NEQ:
-		return token.NEQ
-	case token.LSS:
-		return token.GTR
-	case token.GTR:
-		return token.LSS
-	case token.LEQ:
-		return token.GEQ
-	case token.GEQ:
-		return token.LEQ
-	default:
-		panic(fmt.Sprintf("unrecognized token %q has no known converse", t.String()))
-	}
-}
+func Converse(t token.Token) token.Token { _ = "STUB: not implemented"; return *new(token.Token) }
 
 // Inverse returns the inverse of the given token. It panics if the token is not a valid comparison.
-func Inverse(t token.Token) token.Token {
-	switch t {
-	case token.EQL:
-		return token.NEQ
-	case token.NEQ:
-		return token.EQL
-	case token.LSS:
-		return token.GEQ
-	case token.GTR:
-		return token.LEQ
-	case token.LEQ:
-		return token.GTR
-	case token.GEQ:
-		return token.LSS
-	default:
-		panic(fmt.Sprintf("unrecognized token %q has no known inverse", t.String()))
-	}
-}
+func Inverse(t token.Token) token.Token { _ = "STUB: not implemented"; return *new(token.Token) }
 
 // PortionAfterSep returns the suffix of the passed string `input` containing at most `occ` occurrences
 // of the separator `sep`
-func PortionAfterSep(input, sep string, occ int) string {
-	splits := strings.Split(input, sep)
-	n := len(splits)
-	if n <= occ+1 {
-		return input // input contains at most `occ` occurrences of `sep`
-	}
-	out := ""
-	for i := n - (1 + occ); i < n; i++ {
-		if len(out) > 0 {
-			out += sep
-		}
-		out += splits[i]
-	}
-	return out
-}
+func PortionAfterSep(input, sep string, occ int) string { _ = "STUB: not implemented"; return "" }
+
+// input contains at most `occ` occurrences of `sep`

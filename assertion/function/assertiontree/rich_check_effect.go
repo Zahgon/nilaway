@@ -15,15 +15,9 @@
 package assertiontree
 
 import (
-	"fmt"
 	"go/ast"
-	"go/token"
-	"go/types"
 
-	"go.uber.org/nilaway/annotation"
 	"go.uber.org/nilaway/guard"
-	"go.uber.org/nilaway/util/asthelper"
-	"go.uber.org/nilaway/util/typeshelper"
 	"golang.org/x/tools/go/cfg"
 )
 
@@ -73,33 +67,21 @@ type FuncErrRet struct {
 	guard guard.Nonce        // the guard to be applied on a matching check
 }
 
-func (f *FuncErrRet) isTriggeredBy(expr ast.Expr) bool {
-	return exprIsPositiveNilCheck(f.root, expr, f.err)
-}
+func (f *FuncErrRet) isTriggeredBy(expr ast.Expr) bool { _ = "STUB: not implemented"; return false }
 
-func (f *FuncErrRet) isInvalidatedBy(node ast.Node) bool {
-	return nodeAssignsOneWithoutOther(f.root, node, f.err, f.ret)
-}
+func (f *FuncErrRet) isInvalidatedBy(node ast.Node) bool { _ = "STUB: not implemented"; return false }
 
-func (f *FuncErrRet) effectIfTrue(node *RootAssertionNode) {
-	guardExpr(node, f.ret, f.guard)
-}
+func (f *FuncErrRet) effectIfTrue(node *RootAssertionNode) { _ = "STUB: not implemented"; return }
 
 func (f *FuncErrRet) effectIfFalse(*RootAssertionNode) {
+	_ = "STUB: not implemented"
 	// no-nop
+	return
 }
 
-func (f *FuncErrRet) isNoop() bool { return false }
+func (f *FuncErrRet) isNoop() bool { _ = "STUB: not implemented"; return false }
 
-func (f *FuncErrRet) equals(effect RichCheckEffect) bool {
-	otherFuncErrRet, ok := effect.(*FuncErrRet)
-	if !ok {
-		return false
-	}
-	return f.root.Equal(f.err, otherFuncErrRet.err) &&
-		f.root.Equal(f.ret, otherFuncErrRet.ret) &&
-		f.guard == otherFuncErrRet.guard
-}
+func (f *FuncErrRet) equals(effect RichCheckEffect) bool { _ = "STUB: not implemented"; return false }
 
 // okRead provides a general implementation for the special return form: `v1, v2, ..., ok := expr`.
 // Concrete examples of patterns supported are:
@@ -113,31 +95,21 @@ type okRead struct {
 	guard guard.Nonce        // the guard to be applied on a matching check
 }
 
-func (r *okRead) isTriggeredBy(expr ast.Expr) bool {
-	return exprMatchesTrackableExpr(r.root, expr, r.ok)
-}
+func (r *okRead) isTriggeredBy(expr ast.Expr) bool { _ = "STUB: not implemented"; return false }
 
-func (r *okRead) isInvalidatedBy(node ast.Node) bool {
-	return nodeAssignsOneWithoutOther(r.root, node, r.ok, r.value)
-}
+func (r *okRead) isInvalidatedBy(node ast.Node) bool { _ = "STUB: not implemented"; return false }
 
-func (r *okRead) effectIfTrue(node *RootAssertionNode) {
-	guardExpr(node, r.value, r.guard)
-}
+func (r *okRead) effectIfTrue(node *RootAssertionNode) { _ = "STUB: not implemented"; return }
 
 func (r *okRead) effectIfFalse(*RootAssertionNode) {
+	_ = "STUB: not implemented"
 	// no-op
+	return
 }
 
-func (*okRead) isNoop() bool { return false }
+func (*okRead) isNoop() bool { _ = "STUB: not implemented"; return false }
 
-func (r *okRead) equals(effect RichCheckEffect) bool {
-	other, ok := effect.(*okRead)
-	if !ok {
-		return false
-	}
-	return r.root.Equal(r.value, other.value) && r.root.Equal(r.ok, other.ok) && r.guard == other.guard
-}
+func (r *okRead) equals(effect RichCheckEffect) bool { _ = "STUB: not implemented"; return false }
 
 // A MapOkRead is a RichCheckEffect for the `ok` in `v, ok := m[k]` assignment. To match such an assignment,
 // both the `v` and the `ok` must be identifiers, and to have the intended effect, an `if ok { }` must
@@ -184,34 +156,24 @@ type FuncOkReturn struct {
 // It is used to allow in place modification of collections of RichCheckEffects.
 type RichCheckNoop struct{}
 
-func (RichCheckNoop) isTriggeredBy(ast.Expr) bool { return false }
+func (RichCheckNoop) isTriggeredBy(ast.Expr) bool { _ = "STUB: not implemented"; return false }
 
-func (RichCheckNoop) isInvalidatedBy(ast.Node) bool { return false }
+func (RichCheckNoop) isInvalidatedBy(ast.Node) bool { _ = "STUB: not implemented"; return false }
 
-func (RichCheckNoop) effectIfTrue(*RootAssertionNode) {}
+func (RichCheckNoop) effectIfTrue(*RootAssertionNode) { _ = "STUB: not implemented"; return }
 
-func (RichCheckNoop) effectIfFalse(*RootAssertionNode) {}
+func (RichCheckNoop) effectIfFalse(*RootAssertionNode) { _ = "STUB: not implemented"; return }
 
-func (RichCheckNoop) isNoop() bool { return true }
+func (RichCheckNoop) isNoop() bool { _ = "STUB: not implemented"; return false }
 
-func (RichCheckNoop) equals(effect RichCheckEffect) bool {
-	_, isNoop := effect.(RichCheckNoop)
-	return isNoop
-}
+func (RichCheckNoop) equals(effect RichCheckEffect) bool { _ = "STUB: not implemented"; return false }
 
 // RichCheckFromNode analyzes the passed `ast.Node` to see if it generates a rich check effect.
 // If it does, that effect is returned along with the boolean true
 // If it does not, then `nil, false` is returned.
 func RichCheckFromNode(rootNode *RootAssertionNode, nonceGenerator *guard.NonceGenerator, node ast.Node) ([]RichCheckEffect, bool) {
-	var effects []RichCheckEffect
-	someEffects := false
-	if okReadEffects, ok := NodeTriggersOkRead(rootNode, nonceGenerator, node); ok {
-		effects, someEffects = append(effects, okReadEffects...), true
-	}
-	if funcEffects, ok := NodeTriggersFuncErrRet(rootNode, nonceGenerator, node); ok {
-		effects, someEffects = append(effects, funcEffects...), true
-	}
-	return effects, someEffects
+	_ = "STUB: not implemented"
+	return nil, false
 }
 
 // parseExpr wraps a call to ParseExprAsProducer with two additional bits of useful handling:
@@ -221,18 +183,14 @@ func RichCheckFromNode(rootNode *RootAssertionNode, nonceGenerator *guard.NonceG
 //     here we don't check for library identifiers which cannot be found in the set of sources for this
 //     analysis pass before we call ParseExprAsProducer below)
 func parseExpr(rootNode *RootAssertionNode, expr ast.Expr) TrackableExpr {
-	defer func() {
-		// This handles unexpected panics during parsing.
-		// TODO: consider removing this hack.
-		_ = recover()
-	}()
-	// this handles being passed the empty expression
-	if asthelper.IsEmptyExpr(expr) {
-		return nil
-	}
-	parsed, _ := rootNode.ParseExprAsProducer(expr, false)
-	return parsed
+	_ = "STUB: not implemented"
+
+	// This handles unexpected panics during parsing.
+	// TODO: consider removing this hack.
+	return *new(TrackableExpr)
 }
+
+// this handles being passed the empty expression
 
 // NodeTriggersOkRead is a case of a node creating a rich bool effect for map reads, channel receives, and user-defined
 // functions in the "ok" form. Specifically, it matches on `AssignStmt`s of the form
@@ -240,259 +198,98 @@ func parseExpr(rootNode *RootAssertionNode, expr ast.Expr) TrackableExpr {
 // - `v, ok := <-ch`
 // - `r0, r1, r2, ..., ok := f()`
 func NodeTriggersOkRead(rootNode *RootAssertionNode, nonceGenerator *guard.NonceGenerator, node ast.Node) ([]RichCheckEffect, bool) {
-	lhs, rhs := asthelper.ExtractLHSRHS(node)
-	if len(lhs) < 2 || len(rhs) != 1 {
-		return nil, false
-	}
-
-	okExpr := lhs[len(lhs)-1]
-	lhsOkParsed := parseExpr(rootNode, okExpr)
-	if lhsOkParsed == nil {
-		// here, the lhs `ok` operand is not trackable so there are no rich effects
-		return nil, false
-	}
-
-	var effects []RichCheckEffect
-
-	switch rhs := rhs[0].(type) {
-	case *ast.IndexExpr:
-		// this is the case of `v, ok := mp[k]`. Early return if the lhs is not a map read of the expected format
-		if len(lhs) != 2 {
-			return nil, false
-		}
-
-		rhsXType := rootNode.Pass().TypesInfo.Types[rhs.X].Type
-		if typeshelper.IsDeeplyMap(rhsXType) {
-			// Create a rich check effect for `v` part of the map read in `v, ok := mp[k]`
-			if lhsValueParsed := parseExpr(rootNode, lhs[0]); lhsValueParsed != nil {
-				// Here, the lhs `value` operand is trackable
-				effects = append(effects, &MapOkRead{
-					okRead{
-						root:  rootNode,
-						value: lhsValueParsed,
-						ok:    lhsOkParsed,
-						guard: nonceGenerator.Next(lhs[0]),
-					}})
-			}
-
-			// Create a rich check effect for the map read `mp[k]` part of `v, ok := mp[k]`. This is important
-			// to support cases when consequent map reads are used instead of creating a local variable `v`. For example,
-			// ```
-			// if _, ok := mp[k]; ok {
-			//	  return *mp[k]
-			// }
-			// ```
-			if rhsParsed := parseExpr(rootNode, rhs); rhsParsed != nil {
-				// Here, the rhs `map read` itself is trackable
-				effects = append(effects, &MapOkRead{
-					okRead{
-						root:  rootNode,
-						value: rhsParsed,
-						ok:    lhsOkParsed,
-						guard: nonceGenerator.Next(rhs),
-					}})
-			}
-
-			// Create a rich check effect for the map itself, `mp`, in `v, ok := mp[k]`
-			if rhsMapParsed := parseExpr(rootNode, rhs.X); rhsMapParsed != nil {
-				// Here, the rhs `map` operand is trackable
-				effects = append(effects, &MapOkReadRefl{
-					okRead{
-						root:  rootNode,
-						value: rhsMapParsed,
-						ok:    lhsOkParsed,
-						guard: nonceGenerator.Next(rhs.X),
-					}})
-			}
-		}
-	case *ast.UnaryExpr:
-		// this is the case of `v, ok := <-ch`. Early return if the lhs is not a channel receive of the expected format
-		if len(lhs) != 2 {
-			return nil, false
-		}
-
-		rhsXType := rootNode.Pass().TypesInfo.Types[rhs.X].Type
-		if rhs.Op == token.ARROW && typeshelper.IsDeeplyChan(rhsXType) {
-			lhsValueParsed := parseExpr(rootNode, lhs[0])
-			if lhsValueParsed != nil {
-				// here, the lhs `value` operand is trackable
-				effects = append(effects, &ChannelOkRecv{
-					okRead{
-						root:  rootNode,
-						value: lhsValueParsed,
-						ok:    lhsOkParsed,
-						guard: nonceGenerator.Next(lhs[0]),
-					}})
-			}
-
-			if rhsChanParsed := parseExpr(rootNode, rhs.X); rhsChanParsed != nil {
-				// here, the rhs `channel` operand is trackable
-				effects = append(effects, &ChannelOkRecvRefl{
-					okRead{
-						root:  rootNode,
-						value: rhsChanParsed,
-						ok:    lhsOkParsed,
-						guard: nonceGenerator.Next(rhs.X),
-					}})
-			}
-		}
-	case *ast.CallExpr:
-		callIdent := asthelper.FuncIdentFromCallExpr(rhs)
-		if callIdent == nil {
-			// this discards the case of an anonymous function
-			// perhaps in the future we could change this
-			return nil, false
-		}
-
-		rhsFuncDecl, ok := rootNode.ObjectOf(callIdent).(*types.Func)
-
-		if !ok || !typeshelper.FuncIsOkReturning(rhsFuncDecl.Signature()) {
-			return nil, false
-		}
-
-		// we've found an assignment of vars to an "ok" form function!
-		for i := 0; i < len(lhs)-1; i++ {
-			lhsExpr := lhs[i]
-			lhsValueParsed := parseExpr(rootNode, lhsExpr)
-			if lhsValueParsed == nil {
-				continue
-			}
-			// here, the lhs `value` operand is trackable
-			effects = append(effects, &FuncOkReturn{
-				okRead{
-					root:  rootNode,
-					value: lhsValueParsed,
-					ok:    lhsOkParsed,
-					guard: nonceGenerator.Next(lhs[i]),
-				}})
-		}
-	}
-	if len(effects) > 0 {
-		return effects, true
-	}
+	_ = "STUB: not implemented"
 	return nil, false
 }
+
+// here, the lhs `ok` operand is not trackable so there are no rich effects
+
+// this is the case of `v, ok := mp[k]`. Early return if the lhs is not a map read of the expected format
+
+// Create a rich check effect for `v` part of the map read in `v, ok := mp[k]`
+
+// Here, the lhs `value` operand is trackable
+
+// Create a rich check effect for the map read `mp[k]` part of `v, ok := mp[k]`. This is important
+// to support cases when consequent map reads are used instead of creating a local variable `v`. For example,
+// ```
+// if _, ok := mp[k]; ok {
+//	  return *mp[k]
+// }
+// ```
+
+// Here, the rhs `map read` itself is trackable
+
+// Create a rich check effect for the map itself, `mp`, in `v, ok := mp[k]`
+
+// Here, the rhs `map` operand is trackable
+
+// this is the case of `v, ok := <-ch`. Early return if the lhs is not a channel receive of the expected format
+
+// here, the lhs `value` operand is trackable
+
+// here, the rhs `channel` operand is trackable
+
+// this discards the case of an anonymous function
+// perhaps in the future we could change this
+
+// we've found an assignment of vars to an "ok" form function!
+
+// here, the lhs `value` operand is trackable
 
 // NodeTriggersFuncErrRet is a case of a node creating a rich check effect.
 // it matches on calls to functions with error-returning types
 func NodeTriggersFuncErrRet(rootNode *RootAssertionNode, nonceGenerator *guard.NonceGenerator, node ast.Node) ([]RichCheckEffect, bool) {
-	lhs, rhs := asthelper.ExtractLHSRHS(node)
-
-	if len(lhs) == 0 || len(rhs) != 1 {
-		return nil, false
-	}
-
-	callExpr, ok := rhs[0].(*ast.CallExpr)
-
-	if !ok {
-		// rhs is not a function call
-		return nil, false
-	}
-
-	// Get signature of the function call (normal and anonymous both)
-	sig := typeshelper.GetFuncSignature(rootNode.Pass().TypesInfo.TypeOf(callExpr.Fun))
-
-	if sig == nil || !typeshelper.FuncIsErrReturning(sig) {
-		return nil, false
-	}
-
-	// we've found an assignment of vars to an error-returning function!
-
-	results := sig.Results()
-	n := results.Len()
-	if len(lhs) != n {
-		panic(fmt.Sprintf("ERROR: AssignStmt found with %d operands on left, "+
-			"and a %d-returning function on right", len(lhs), n))
-	}
-
-	errExpr := lhs[n-1]
-	errExprParsed := parseExpr(rootNode, errExpr)
-
-	if errExprParsed == nil {
-		// here, unfortunately, the error return is not trackable so there are no RichCheckEffects
-		return nil, false
-	}
-
-	var effects []RichCheckEffect
-	someEffect := false
-
-	for i := 0; i < n-1; i++ {
-		lhsExpr := lhs[i]
-		lhsExprParsed := parseExpr(rootNode, lhsExpr)
-
-		if lhsExprParsed == nil {
-			continue
-		}
-
-		// we've found a valid place that an error variable indicates the safety of
-		// nilability annotations on a return variable, so instantiate a new RichCheckEffect!
-		effects, someEffect = append(effects, &FuncErrRet{
-			root:  rootNode,
-			err:   errExprParsed,
-			ret:   lhsExprParsed,
-			guard: nonceGenerator.Next(lhsExpr),
-		}), true
-	}
-
-	return effects, someEffect
+	_ = "STUB: not implemented"
+	return nil, false
 }
+
+// rhs is not a function call
+
+// Get signature of the function call (normal and anonymous both)
+
+// we've found an assignment of vars to an error-returning function!
+
+// here, unfortunately, the error return is not trackable so there are no RichCheckEffects
+
+// we've found a valid place that an error variable indicates the safety of
+// nilability annotations on a return variable, so instantiate a new RichCheckEffect!
 
 // nodeIsAssignmentTo(pass, node, one, other) returns true if `node` is an assignment to the variable
 // `one` but not an assignment to the variable `other`
 func nodeAssignsOneWithoutOther(rootNode *RootAssertionNode, node ast.Node, one, other TrackableExpr) bool {
-	var assignsOne, assignsOther bool
-	if assignStmt, ok := node.(*ast.AssignStmt); ok {
-		for _, assignedVal := range assignStmt.Lhs {
-			parsedLHSExpr := parseExpr(rootNode, assignedVal)
-			if parsedLHSExpr != nil {
-				if !assignsOne && rootNode.Equal(parsedLHSExpr, one) {
-					assignsOne = true
-				}
-				if !assignsOther && rootNode.Equal(parsedLHSExpr, other) {
-					assignsOther = true
-				}
-			}
-		}
-	}
-	return assignsOne && !assignsOther
+	_ = "STUB: not implemented"
+	return false
 }
 
 // exprIsPositiveNilCheck checks if an expression `expr` is of the form `checksVar == nil` for some
 // variable `checksVar`. Note that because of preprocessing done in `restructureBlock` from
 // `preprocess_blocks.go`, this suffices to handle cases such as `nil != checksVar` as well.
 func exprIsPositiveNilCheck(rootNode *RootAssertionNode, expr ast.Expr, checksExpr TrackableExpr) bool {
-	if binExpr, ok := expr.(*ast.BinaryExpr); ok && binExpr.Op == token.EQL && asthelper.IsLiteral(binExpr.Y, "nil") {
-		// Standard case: X == nil
-		if exprMatchesTrackableExpr(rootNode, binExpr.X, checksExpr) {
-			return true
-		}
-		// Special case: type-switch guard rewritten as "(x.(type)) == nil".
-		// In such cases, the BinaryExpr.X will be a *ast.TypeAssertExpr whose Type is nil,
-		// and we should treat it as if we are checking "x == nil".
-		if ta, ok := binExpr.X.(*ast.TypeAssertExpr); ok && ta.Type == nil {
-			return exprMatchesTrackableExpr(rootNode, ta.X, checksExpr)
-		}
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
+// Standard case: X == nil
+
+// Special case: type-switch guard rewritten as "(x.(type)) == nil".
+// In such cases, the BinaryExpr.X will be a *ast.TypeAssertExpr whose Type is nil,
+// and we should treat it as if we are checking "x == nil".
+
 // exprMatchesTrackableExpr checks if an expression `expr` is equivalent to the passed TrackableExpr `checks`
 func exprMatchesTrackableExpr(rootNode *RootAssertionNode, expr ast.Expr, checks TrackableExpr) bool {
-	parsedExpr := parseExpr(rootNode, expr)
-	return parsedExpr != nil && rootNode.Equal(parsedExpr, checks)
+	_ = "STUB: not implemented"
+	return false
 }
 
 // guardExpr marks all the consume triggers in the var assertion node corresponding to the passed
 // variable (if such a node exists) as guarded by the passed GuardNonce
 func guardExpr(rootNode *RootAssertionNode, expr TrackableExpr, nonce guard.Nonce) {
-	lookedUpNode, _ := rootNode.lookupPath(expr)
-	if lookedUpNode != nil {
-		// The passed expression is tracked, so mark its corresponding node as guarded
-		lookedUpNode.SetConsumeTriggers(
-			annotation.ConsumeTriggerSliceAsGuarded(
-				lookedUpNode.ConsumeTriggers(), nonce))
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// The passed expression is tracked, so mark its corresponding node as guarded
 
 // genInitialRichCheckEffects computes an initial array of RichCheckEffect slices for each block,
 // not doing any propagation over the CFG except for within each block to track nodes
@@ -505,61 +302,26 @@ func guardExpr(rootNode *RootAssertionNode, expr TrackableExpr, nonce guard.Nonc
 // Important: do not duplicate any pointers: each returned RichCheckEffect should be a unique object
 func genInitialRichCheckEffects(graph *cfg.CFG, functionContext FunctionContext) (
 	[][]RichCheckEffect, guard.ExprNonceMap) {
-	richCheckBlocks := make([][]RichCheckEffect, len(graph.Blocks))
-	nonceGenerator := guard.NewNonceGenerator()
-
-	// There is no canonical instance of RootAssertionNode until backpropAcrossFunc returns.
-	// We use a temporary root here as a means to pass contextual information like the function
-	// declaration and analysis pass.
-	rootNode := newRootAssertionNode(nonceGenerator.GetExprNonceMap(), functionContext)
-	for i, block := range graph.Blocks {
-		var richCheckEffects []RichCheckEffect
-		for _, node := range block.Nodes {
-
-			// invalidate any richCheckEffects that this node invalidates
-			for j, effect := range richCheckEffects {
-				if effect.isInvalidatedBy(node) {
-					richCheckEffects[j] = RichCheckNoop{}
-				}
-			}
-
-			// check if this node produces a new richCheckEffect
-			if effects, ok := RichCheckFromNode(rootNode, nonceGenerator, node); ok {
-				richCheckEffects = append(richCheckEffects, effects...)
-			}
-		}
-		// richCheckEffects is now fully populated
-
-		// strip out noops and write into richCheckBlocks
-		richCheckBlocks[i] = stripNoops(richCheckEffects)
-	}
-	return richCheckBlocks, nonceGenerator.GetExprNonceMap()
+	_ = "STUB: not implemented"
+	return nil, *new(guard.ExprNonceMap)
 }
+
+// There is no canonical instance of RootAssertionNode until backpropAcrossFunc returns.
+// We use a temporary root here as a means to pass contextual information like the function
+// declaration and analysis pass.
+
+// invalidate any richCheckEffects that this node invalidates
+
+// check if this node produces a new richCheckEffect
+
+// richCheckEffects is now fully populated
+
+// strip out noops and write into richCheckBlocks
 
 // stripNoops returns a copy of the passed slice `effects`, minus any no-ops
-func stripNoops(effects []RichCheckEffect) []RichCheckEffect {
-	var strippedEffects []RichCheckEffect
+func stripNoops(effects []RichCheckEffect) []RichCheckEffect { _ = "STUB: not implemented"; return nil }
 
-	for _, effect := range effects {
-		if !effect.isNoop() {
-			strippedEffects = append(strippedEffects, effect)
-		}
-	}
-
-	return strippedEffects
-}
-
-func genPreds(graph *cfg.CFG) [][]int32 {
-	out := make([][]int32, len(graph.Blocks))
-	for _, block := range graph.Blocks {
-		if block.Live {
-			for _, succ := range block.Succs {
-				out[succ.Index] = append(out[succ.Index], block.Index)
-			}
-		}
-	}
-	return out
-}
+func genPreds(graph *cfg.CFG) [][]int32 { _ = "STUB: not implemented"; return nil }
 
 // weakPropagateRichChecks performs a simple form of propagation of rich checks: for each effect, it
 // figures out which blocks are reachable from the block it was declared in.
@@ -567,32 +329,11 @@ func genPreds(graph *cfg.CFG) [][]int32 {
 // The results are returned as a map from `RichCheckEffect`s to arrays of booleans, representing for
 // each block whether it is reached by the block that effect is declared in
 func weakPropagateRichChecks(graph *cfg.CFG, richCheckBlocks [][]RichCheckEffect) map[RichCheckEffect][]bool {
-	reachability := make(map[RichCheckEffect][]bool)
-	for blockNum := range richCheckBlocks {
-		for _, check := range richCheckBlocks[blockNum] {
-			newCheck := make([]bool, len(richCheckBlocks))
-			newCheck[blockNum] = true // mark each check as reachable in its declaring block
-			reachability[check] = newCheck
-		}
-	}
-	done := false
-	for !done {
-		done = true
-		for blockNum := range richCheckBlocks {
-			for _, reachable := range reachability {
-				if reachable[blockNum] {
-					for _, nextBlock := range graph.Blocks[blockNum].Succs {
-						if !reachable[nextBlock.Index] {
-							reachable[nextBlock.Index] = true
-							done = false
-						}
-					}
-				}
-			}
-		}
-	}
-	return reachability
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// mark each check as reachable in its declaring block
 
 // propagateRichChecks takes an initial array richCheckBlocks and flows all of its contained checks
 // forwards through the CFG as long as they are not invalidated. A check created by a node in block A
@@ -603,139 +344,30 @@ func weakPropagateRichChecks(graph *cfg.CFG, richCheckBlocks [][]RichCheckEffect
 // including exactly those checks that are present in every predecessor of the block that is reachable
 // from the originator block of the check.
 func propagateRichChecks(graph *cfg.CFG, richCheckBlocks [][]RichCheckEffect) [][]RichCheckEffect {
-	n := len(graph.Blocks)
-	if len(richCheckBlocks) != n {
-		panic(fmt.Sprintf("richCheckBlocks (len %d) and graph.blocks (len %d) out of "+
-			"sync - fix generation pass in preprocess_blocks.go", len(richCheckBlocks), n))
-	}
-
-	effectReaches := weakPropagateRichChecks(graph, richCheckBlocks)
-
-	currBlocks := richCheckBlocks
-	nextBlocks := make([][]RichCheckEffect, n)
-
-	preds := genPreds(graph)
-	roundCount := 0
-
-	done := false
-
-	for !done {
-
-		done = true
-
-		for i := range preds {
-
-			// predRichCheckEffects will be populated with all the rich bool effects that flow
-			// into this block from one of its 0 or more predecessors
-			var predRichCheckEffects []RichCheckEffect
-
-			if len(preds[i]) >= 1 {
-				reachingEffects := make(map[RichCheckEffect]bool)
-
-				for _, predIndex := range preds[i] {
-					for _, effect := range currBlocks[predIndex] {
-						// for each effect in a predecessor, mark it as `true` in `reachingEffects`
-						// - performing a merge
-						reachingEffects[effect] = true
-					}
-				}
-
-				for _, predIndex := range preds[i] {
-					maskingEffects := make(map[RichCheckEffect]bool)
-					for effect := range reachingEffects {
-						if blocksEffectReaches, ok := effectReaches[effect]; ok &&
-							blocksEffectReaches[predIndex] {
-							maskingEffects[effect] = true
-						}
-					}
-					for _, effect := range currBlocks[predIndex] {
-						if maskingEffects[effect] {
-							maskingEffects[effect] = false
-						}
-					}
-					for effect, present := range maskingEffects {
-						if present {
-							reachingEffects[effect] = false
-						}
-					}
-				}
-
-				predRichCheckEffects = make([]RichCheckEffect, 0)
-
-				for effect := range reachingEffects {
-					if reachingEffects[effect] {
-						predRichCheckEffects = append(predRichCheckEffects, effect)
-					}
-				}
-
-				// This code performs a simple merge instead - but this is very unsound and NOT right
-				// 		predRichCheckEffects =
-				// 			append(make([]RichCheckEffect, 0, len(currBlocks[preds[i][0]])),
-				// 				currBlocks[preds[i][0]]...)
-				//
-				// 		for _, predNum := range preds[i][1:] {
-				// 			predRichCheckEffects = mergeSlices(false, predRichCheckEffects, currBlocks[predNum])
-				// 		}
-
-				for _, node := range graph.Blocks[i].Nodes {
-					// invalidate any richCheckEffects that this node invalidates
-					for j, effect := range predRichCheckEffects {
-						if effect.isInvalidatedBy(node) {
-							predRichCheckEffects[j] = RichCheckNoop{}
-						}
-					}
-				}
-			}
-
-			nextBlocks[i] = mergeSlices(false, currBlocks[i], stripNoops(predRichCheckEffects))
-			if len(nextBlocks[i]) > len(currBlocks[i]) {
-				done = false
-			}
-		}
-
-		currBlocks = nextBlocks
-		nextBlocks = make([][]RichCheckEffect, n)
-
-		roundCount++
-
-		checkCFGFixedPointRuntime("RichCheckEffect Forwards Propagation", roundCount, n)
-	}
-
-	// this strips duplicates from the RichCheckEffect slices
-	for i := range currBlocks {
-		currBlocks[i] = mergeSlices(true, currBlocks[i])
-	}
-
-	return currBlocks
+	_ = "STUB: not implemented"
+	return nil
 }
 
+// predRichCheckEffects will be populated with all the rich bool effects that flow
+// into this block from one of its 0 or more predecessors
+
+// for each effect in a predecessor, mark it as `true` in `reachingEffects`
+// - performing a merge
+
+// This code performs a simple merge instead - but this is very unsound and NOT right
+// 		predRichCheckEffects =
+// 			append(make([]RichCheckEffect, 0, len(currBlocks[preds[i][0]])),
+// 				currBlocks[preds[i][0]]...)
+//
+// 		for _, predNum := range preds[i][1:] {
+// 			predRichCheckEffects = mergeSlices(false, predRichCheckEffects, currBlocks[predNum])
+// 		}
+
+// invalidate any richCheckEffects that this node invalidates
+
+// this strips duplicates from the RichCheckEffect slices
+
 func mergeSlices(useDeepEquality bool, left []RichCheckEffect, rights ...[]RichCheckEffect) []RichCheckEffect {
-	var eq func(first, second RichCheckEffect) bool
-	if useDeepEquality {
-		eq = func(first, second RichCheckEffect) bool {
-			return first.equals(second)
-		}
-	} else {
-		eq = func(first, second RichCheckEffect) bool {
-			return first == second
-		}
-	}
-	var out []RichCheckEffect
-	addToOut := func(effect RichCheckEffect) {
-		for _, outEffect := range out {
-			if eq(outEffect, effect) {
-				return
-			}
-		}
-		out = append(out, effect)
-	}
-	for _, l := range left {
-		addToOut(l)
-	}
-	for _, right := range rights {
-		for _, r := range right {
-			addToOut(r)
-		}
-	}
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }

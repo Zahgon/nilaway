@@ -44,7 +44,7 @@ func DerefNoLintFunc(v *int) {
 	print(*v)
 }
 
-func Deref(v *int, ) {
+func Deref(v *int) {
 	switch _caseNo {
 	case 1:
 		print(*v) //want "function parameter `v` dereferenced"

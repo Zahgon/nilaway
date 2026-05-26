@@ -15,9 +15,7 @@
 package diagnostic
 
 import (
-	"fmt"
 	"go/token"
-	"strings"
 
 	"go.uber.org/nilaway/annotation"
 )
@@ -29,47 +27,27 @@ type nilFlow struct {
 
 // addNilPathNode adds a new node to the nil path.
 func (n *nilFlow) addNilPathNode(p annotation.Prestring, c annotation.Prestring) {
-	nodeObj := newNode(p, c)
+	_ = "STUB: not implemented"
+	return
 
 	// Note that in the implication graph, we traverse backwards from the point of conflict to the source of nilability.
 	// Therefore, they are added in reverse order from what the program flow would look like. To account for this we
 	// prepend the new node to nilPath because we want to print the program flow in its correct (forward) order.
 	// TODO: instead of prepending here, we can reverse the nilPath slice while printing.
-	n.nilPath = append([]node{nodeObj}, n.nilPath...)
 }
 
 // addNonNilPathNode adds a new node to the non-nil path
 func (n *nilFlow) addNonNilPathNode(p annotation.Prestring, c annotation.Prestring) {
-	nodeObj := newNode(p, c)
-	n.nonnilPath = append(n.nonnilPath, nodeObj)
+	_ = "STUB: not implemented"
+	return
 }
 
 // String converts a nilFlow to a string representation, where each entry is the flow of the form: `<pos>: <reason>`
-func (n *nilFlow) String() string {
-	var allNodes []node
-	allNodes = append(allNodes, n.nilPath...)
-	allNodes = append(allNodes, n.nonnilPath...)
-
-	var flow []string
-	for _, nodeObj := range allNodes {
-		flow = append(flow, nodeObj.String())
-	}
-	return "\n" + strings.Join(flow, "\n")
-}
+func (n *nilFlow) String() string { _ = "STUB: not implemented"; return "" }
 
 // involvesTestFile returns true if any node position in the nil or non-nil path originates from
 // a test file (i.e., a file ending with "_test.go").
-func (n *nilFlow) involvesTestFile() bool {
-	for _, nodes := range [2][]node{n.nilPath, n.nonnilPath} {
-		for _, nd := range nodes {
-			if strings.HasSuffix(nd.producerPosition.Filename, "_test.go") ||
-				strings.HasSuffix(nd.consumerPosition.Filename, "_test.go") {
-				return true
-			}
-		}
-	}
-	return false
-}
+func (n *nilFlow) involvesTestFile() bool { _ = "STUB: not implemented"; return false }
 
 type node struct {
 	producerPosition token.Position
@@ -82,51 +60,14 @@ type node struct {
 // LocatedPrestring contains accurate information about the position and the reason why NilAway deemed that position
 // to be nilable. We use it if available, else we use the raw string representation available from the Prestring.
 func newNode(p annotation.Prestring, c annotation.Prestring) node {
-	nodeObj := node{}
+	_ = "STUB: not implemented"
 
 	// get producer representation string
-	if l, ok := p.(annotation.LocatedPrestring); ok {
-		nodeObj.producerPosition = l.Location
-		nodeObj.producerRepr = l.Contained.String()
-	} else if p != nil {
-		nodeObj.producerRepr = p.String()
-	}
-
-	// get consumer representation string
-	if l, ok := c.(annotation.LocatedPrestring); ok {
-		nodeObj.consumerPosition = l.Location
-		nodeObj.consumerRepr = l.Contained.String()
-	} else if c != nil {
-		nodeObj.consumerRepr = c.String()
-	}
-
-	return nodeObj
+	return *new(node)
 }
 
-func (n *node) String() string {
-	posStr := "<no pos info>"
-	reasonStr := ""
-	if n.consumerPosition.IsValid() {
-		posStr = n.consumerPosition.String()
-	}
+// get consumer representation string
 
-	if len(n.producerRepr) > 0 {
-		reasonStr += n.producerRepr
-	}
-	if len(n.consumerRepr) > 0 {
-		if len(n.producerRepr) > 0 {
-			reasonStr += " "
-		}
-		reasonStr += n.consumerRepr
-	}
+func (n *node) String() string { _ = "STUB: not implemented"; return "" }
 
-	return fmt.Sprintf("\t- %s: %s", posStr, reasonStr)
-}
-
-func pathString(nodes []node) string {
-	path := ""
-	for _, n := range nodes {
-		path += n.String()
-	}
-	return path
-}
+func pathString(nodes []node) string { _ = "STUB: not implemented"; return "" }

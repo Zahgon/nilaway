@@ -35,20 +35,19 @@ type indexAssertionNode struct {
 }
 
 func (i *indexAssertionNode) MinimalString() string {
-	return "index"
+	_ = "STUB: not implemented"
+
+	// DefaultTrigger for an index node is the deep nilability annotation of its parent type
+	return ""
 }
 
-// DefaultTrigger for an index node is the deep nilability annotation of its parent type
 func (i *indexAssertionNode) DefaultTrigger() annotation.ProducingAnnotationTrigger {
-	return deepNilabilityTriggerOf(i.Parent())
+	_ = "STUB: not implemented"
+	return *new(annotation.ProducingAnnotationTrigger)
 }
 
 // BuildExpr for an index node adds that index to `expr`
 func (i *indexAssertionNode) BuildExpr(expr ast.Expr) ast.Expr {
-	return &ast.IndexExpr{
-		X:      expr,
-		Lbrack: 0,
-		Index:  i.index,
-		Rbrack: 0,
-	}
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }

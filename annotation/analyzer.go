@@ -36,13 +36,4 @@ var Analyzer = &analysis.Analyzer{
 	Requires:   []*analysis.Analyzer{config.Analyzer},
 }
 
-func run(p *analysis.Pass) (*ObservedMap, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-
-	if !conf.IsPkgInScope(pass.Pkg) {
-		return new(ObservedMap), nil
-	}
-
-	return newObservedMap(pass, pass.Files), nil
-}
+func run(p *analysis.Pass) (*ObservedMap, error) { _ = "STUB: not implemented"; return nil, nil }

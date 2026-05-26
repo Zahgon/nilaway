@@ -15,13 +15,9 @@
 package diagnostic
 
 import (
-	"go/ast"
 	"reflect"
-	"slices"
-	"strings"
 
 	"go.uber.org/nilaway/util/analysishelper"
-	"go.uber.org/nilaway/util/tokenhelper"
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -47,9 +43,13 @@ type NoLint struct {
 }
 
 // AFact makes NoLint satisfy the analysis.Fact interface such that it can be exported as a fact.
-func (*NoLint) AFact() {}
+func (*NoLint) AFact() {
+	_ = "STUB: not implemented"
 
-// Range is a minimal struct that stores the filename and the start and end lines of a nolint scopes.
+	// Range is a minimal struct that stores the filename and the start and end lines of a nolint scopes.
+	return
+}
+
 type Range struct {
 	// Filename is the filename of the file where the nolint comment is located.
 	Filename string
@@ -57,67 +57,23 @@ type Range struct {
 	From, To int
 }
 
-func run(p *analysis.Pass) ([]Range, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	var ranges []Range
-	for _, f := range pass.Files {
-		// CommentMap will correctly associate comments to the largest node group
-		// applicable. This handles inline comments that might trail a large
-		// assignment and will apply the comment to the entire assignment.
-		commentMap := ast.NewCommentMap(pass.Fset, f, f.Comments)
-		for node, groups := range commentMap {
-			for _, group := range groups {
-				for _, comm := range group.List {
-					if !nolintContainsNilAway(comm.Text) {
-						continue
-					}
-					fromPos, toPos := pass.Fset.Position(node.Pos()), pass.Fset.Position(node.End())
-					ranges = append(ranges, Range{Filename: tokenhelper.RelToCwd(fromPos.Filename), From: fromPos.Line, To: toPos.Line})
-				}
-			}
-		}
-	}
+func run(p *analysis.Pass) ([]Range, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// Import all nolint ranges from upstream.
-	var upstreamRanges []Range
-	for _, f := range pass.AllPackageFacts() {
-		upstreamNoLintRanges, ok := f.Fact.(*NoLint)
-		if !ok {
-			continue
-		}
-		upstreamRanges = append(upstreamRanges, upstreamNoLintRanges.Ranges...)
-	}
+// CommentMap will correctly associate comments to the largest node group
+// applicable. This handles inline comments that might trail a large
+// assignment and will apply the comment to the entire assignment.
 
-	// Export local nolint ranges (if available) for downstream uses.
-	if len(ranges) > 0 {
-		pass.ExportPackageFact(&NoLint{Ranges: ranges})
-	}
+// Import all nolint ranges from upstream.
 
-	return slices.Concat(ranges, upstreamRanges), nil
-}
+// Export local nolint ranges (if available) for downstream uses.
 
 // nolintContainsNilAway checks if the particular comment is a nolint comment for NilAway suppression.
 func nolintContainsNilAway(text string) bool {
+	_ = "STUB: not implemented"
 	// This implementation is adapted from
 	// https://github.com/bazel-contrib/rules_go/blob/eb13b736d9568044427f23359329155e67071948/go/tools/builders/nolint.go#L21
 	// under Apache 2.0 license.
-	text = strings.TrimLeft(text, "/ ")
-	if !strings.HasPrefix(text, "nolint") {
-		return false
-	}
-
-	// strip explanation comments
-	split := strings.Split(text, "//")
-	text = strings.TrimSpace(split[0])
-
-	parts := strings.Split(text, ":")
-	if len(parts) == 1 {
-		return true
-	}
-	for linter := range strings.SplitSeq(strings.TrimSpace(parts[1]), ",") {
-		if strings.EqualFold(linter, "all") || strings.EqualFold(linter, "nilaway") {
-			return true
-		}
-	}
 	return false
 }
+
+// strip explanation comments

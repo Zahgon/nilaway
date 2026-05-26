@@ -24,21 +24,36 @@ type ShallowParsedProducer struct {
 
 // GetShallow for a ShallowParsedProducer contains the singular ProduceTrigger of this object
 func (sp ShallowParsedProducer) GetShallow() *annotation.ProduceTrigger {
-	return sp.Producer
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetDeep for a ShallowParsedProducer returns nil
+	// nilable(result 0)
 }
 
-// GetDeep for a ShallowParsedProducer returns nil
-// nilable(result 0)
-func (sp ShallowParsedProducer) GetDeep() *annotation.ProduceTrigger { return nil }
+func (sp ShallowParsedProducer) GetDeep() *annotation.ProduceTrigger {
+	_ = "STUB: not implemented"
 
-// GetFieldProducers returns nil as field producers
-func (sp ShallowParsedProducer) GetFieldProducers() []*annotation.ProduceTrigger {
+	// GetFieldProducers returns nil as field producers
 	return nil
 }
 
-// IsDeep for a ShallowParsedProducer returns false
-func (sp ShallowParsedProducer) IsDeep() bool { return false }
+func (sp ShallowParsedProducer) GetFieldProducers() []*annotation.ProduceTrigger {
+	_ = "STUB: not implemented"
 
-// GetDeepSlice for a ShallowParsedProducer returns an empty slice
-// nilable(result 0)
-func (sp ShallowParsedProducer) GetDeepSlice() []*annotation.ProduceTrigger { return nil }
+	// IsDeep for a ShallowParsedProducer returns false
+	return nil
+}
+
+func (sp ShallowParsedProducer) IsDeep() bool {
+	_ = "STUB: not implemented"
+
+	// GetDeepSlice for a ShallowParsedProducer returns an empty slice
+	// nilable(result 0)
+	return false
+}
+
+func (sp ShallowParsedProducer) GetDeepSlice() []*annotation.ProduceTrigger {
+	_ = "STUB: not implemented"
+	return nil
+}

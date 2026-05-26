@@ -16,183 +16,79 @@ package global
 
 import (
 	"go/ast"
-	"go/types"
 
 	"go.uber.org/nilaway/annotation"
-	"go.uber.org/nilaway/guard"
 	"go.uber.org/nilaway/util/analysishelper"
-	"go.uber.org/nilaway/util/asthelper"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 // analyzeValueSpec returns full triggers corresponding to the declaration
 func analyzeValueSpec(pass *analysishelper.EnhancedPass, spec *ast.ValueSpec) []annotation.FullTrigger {
-	var fullTriggers []annotation.FullTrigger
-
-	consumers := getGlobalConsumers(pass, spec)
-
-	for i, ident := range spec.Names {
-		if consumers[i] == nil {
-			continue
-		}
-
-		var prod *annotation.ProduceTrigger
-		// Case: variables are not initialized
-		// All the variables in this case have same type
-		if len(spec.Values) == 0 {
-			prod = &annotation.ProduceTrigger{
-				Annotation: &annotation.ProduceTriggerTautology{},
-				Expr:       ident,
-			}
-		} else if len(spec.Names) == len(spec.Values) {
-			// Case: variables are initialized and the assignment is 1-1
-			prod = getGlobalProducer(pass, spec, i, i)
-		} else {
-			// Case: variables are initialized using a multiple return function
-			prod = getGlobalProducer(pass, spec, i, 0)
-		}
-
-		if prod != nil {
-			fullTriggers = append(fullTriggers,
-				annotation.FullTrigger{
-					Producer: prod,
-					Consumer: consumers[i],
-				})
-		}
-	}
-
-	return fullTriggers
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Case: variables are not initialized
+// All the variables in this case have same type
+
+// Case: variables are initialized and the assignment is 1-1
+
+// Case: variables are initialized using a multiple return function
 
 // Returns a list of consumers corresponding to a global level variable declaration
 func getGlobalConsumers(pass *analysishelper.EnhancedPass, valspec *ast.ValueSpec) []*annotation.ConsumeTrigger {
-	consumers := make([]*annotation.ConsumeTrigger, len(valspec.Names))
-
-	for i, name := range valspec.Names {
-		// Types that are not nilable are eliminated here
-		if !asthelper.IsEmptyExpr(name) && !typeshelper.TypeBarsNilness(pass.TypesInfo.TypeOf(name)) {
-			v := pass.TypesInfo.ObjectOf(name).(*types.Var)
-			consumers[i] = &annotation.ConsumeTrigger{
-				Annotation: &annotation.GlobalVarAssign{
-					TriggerIfNonNil: &annotation.TriggerIfNonNil{
-						Ann: &annotation.GlobalVarAnnotationKey{
-							VarDecl: v,
-						}}},
-				Expr:         name,
-				Guards:       guard.NoGuards(),
-				GuardMatched: false,
-			}
-		}
-	}
-	return consumers
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Types that are not nilable are eliminated here
 
 // Returns a producer in the cases: 1) func call 2) literal nil 3) another global var 4) struct field/method.
 // In all other cases, it returns nil.
 func getGlobalProducer(pass *analysishelper.EnhancedPass, valspec *ast.ValueSpec, lid int, rid int) *annotation.ProduceTrigger {
-	switch rhs := valspec.Values[rid].(type) {
-	case *ast.CallExpr:
-		if ident, ok := rhs.Fun.(*ast.Ident); ok {
-			// We assume builtin functions do not return nil.
-			if _, ok := pass.TypesInfo.ObjectOf(ident).(*types.Builtin); ok {
-				return nil
-			}
-			return getProducerForFuncCall(pass, ident, lid, rid, rhs)
-		}
-		// Method call
-		if methCall, ok := rhs.Fun.(*ast.SelectorExpr); ok {
-			methName := methCall.Sel
-			return getProducerForMethodCall(pass, methName, lid, rid, rhs)
-		}
-	case *ast.Ident:
-		// if rhs is literal nil
-		if rhs.Name == "nil" {
-			return &annotation.ProduceTrigger{
-				Annotation: &annotation.ConstNil{ProduceTriggerTautology: &annotation.ProduceTriggerTautology{}},
-				Expr:       rhs,
-			}
-		}
-		// if rhs is another global
-		return getProducerForVar(pass, rhs)
-	case *ast.SelectorExpr:
-		// Struct field access
-		return getProducerForField(pass, rhs.Sel)
-	}
-
+	_ = "STUB: not implemented"
 	return nil
 }
 
-func getProducerForVar(pass *analysishelper.EnhancedPass, rhs *ast.Ident) *annotation.ProduceTrigger {
-	rhsVar, ok := pass.TypesInfo.ObjectOf(rhs).(*types.Var)
-	if !ok || !annotation.VarIsGlobal(rhsVar) {
-		// If rhs is not a global variable (e.g., a constant), we ignore it.
-		return nil
-	}
+// We assume builtin functions do not return nil.
 
-	return &annotation.ProduceTrigger{
-		Annotation: &annotation.GlobalVarRead{
-			TriggerIfNilable: &annotation.TriggerIfNilable{
-				Ann: &annotation.GlobalVarAnnotationKey{
-					VarDecl: rhsVar,
-				}}},
-		Expr: rhs,
-	}
+// Method call
+
+// if rhs is literal nil
+
+// if rhs is another global
+
+// Struct field access
+
+func getProducerForVar(pass *analysishelper.EnhancedPass, rhs *ast.Ident) *annotation.ProduceTrigger {
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// If rhs is not a global variable (e.g., a constant), we ignore it.
 
 func getProducerForField(pass *analysishelper.EnhancedPass, rhs *ast.Ident) *annotation.ProduceTrigger {
-	rhsVar, ok := pass.TypesInfo.ObjectOf(rhs).(*types.Var)
-	if !ok {
-		// If rhs is not a variable (e.g., a constant from an upstream package), we ignore it.
-		return nil
-	}
-	return &annotation.ProduceTrigger{
-		Annotation: &annotation.FldRead{
-			TriggerIfNilable: &annotation.TriggerIfNilable{
-				Ann: &annotation.FieldAnnotationKey{
-					FieldDecl: rhsVar,
-				}}},
-		Expr: rhs,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// If rhs is not a variable (e.g., a constant from an upstream package), we ignore it.
 
 func getProducerForFuncCall(pass *analysishelper.EnhancedPass, methName *ast.Ident, lid int, rid int, rhs ast.Expr) *annotation.ProduceTrigger {
-	fdecl, ok := pass.TypesInfo.ObjectOf(methName).(*types.Func)
-
-	// We ignore if the method is anonymous
-	if !ok {
-		return nil
-	}
-
-	// We are interested in `lid-rid`-th return of the function
-	// In single return function this is `0` and in multiple return function it is `lid`
-	retKey := annotation.RetKeyFromRetNum(fdecl, lid-rid)
-
-	prod := &annotation.ProduceTrigger{
-		Annotation: &annotation.FuncReturn{
-			TriggerIfNilable: &annotation.TriggerIfNilable{Ann: retKey, NeedsGuard: false},
-		},
-		Expr: rhs,
-	}
-	return prod
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// We ignore if the method is anonymous
+
+// We are interested in `lid-rid`-th return of the function
+// In single return function this is `0` and in multiple return function it is `lid`
 
 func getProducerForMethodCall(pass *analysishelper.EnhancedPass, methName *ast.Ident, lid int, rid int, rhs ast.Expr) *annotation.ProduceTrigger {
-	mdecl, ok := pass.TypesInfo.ObjectOf(methName).(*types.Func)
-
-	// We ignore if the method is anonymous
-	if !ok {
-		return nil
-	}
-
-	// We are interested in `lid-rid`-th return of the function
-	// In single return function this is `0` and in multiple return function it is `lid`
-	retKey := annotation.RetKeyFromRetNum(mdecl, lid-rid)
-
-	prod := &annotation.ProduceTrigger{
-		Annotation: &annotation.MethodReturn{
-			TriggerIfNilable: &annotation.TriggerIfNilable{Ann: retKey},
-		},
-		Expr: rhs,
-	}
-	return prod
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// We ignore if the method is anonymous
+
+// We are interested in `lid-rid`-th return of the function
+// In single return function this is `0` and in multiple return function it is `lid`

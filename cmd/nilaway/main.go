@@ -21,12 +21,9 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path/filepath"
-	"strings"
 
 	"go.uber.org/nilaway"
 	"go.uber.org/nilaway/config"
-	"go.uber.org/nilaway/util/analysishelper"
 	"golang.org/x/tools/go/analysis"
 	"golang.org/x/tools/go/analysis/singlechecker"
 )
@@ -50,65 +47,26 @@ var (
 	_excludeErrorsInFiles string
 )
 
-func run(p *analysis.Pass) (interface{}, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	// NilAway by default analyzes all packages, including dependencies. Even if specified to
-	// exclude packages from analysis via configurations, NilAway can still report errors on
-	// packages that are not analyzed if the nilness flow happens within the analyzed package, but
-	// the flow concerns a struct that is in an excluded package. The usual way to handle them is
-	// to suppress them at the driver level, but singlechecker does not support that yet. Therefore,
-	// here we add extra logic to filter the errors.
+func run(p *analysis.Pass) (interface{}, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// Properly parse the error suppression flags.
-	includes, err := parseFilePrefixes(_includeErrorsInFiles)
-	if err != nil {
-		return nil, fmt.Errorf("parse file prefixes for error inclusion: %w", err)
-	}
-	excludes, err := parseFilePrefixes(_excludeErrorsInFiles)
-	if err != nil {
-		return nil, fmt.Errorf("parse file prefixes for error exclusion: %w", err)
-	}
+// NilAway by default analyzes all packages, including dependencies. Even if specified to
+// exclude packages from analysis via configurations, NilAway can still report errors on
+// packages that are not analyzed if the nilness flow happens within the analyzed package, but
+// the flow concerns a struct that is in an excluded package. The usual way to handle them is
+// to suppress them at the driver level, but singlechecker does not support that yet. Therefore,
+// here we add extra logic to filter the errors.
 
-	// Override the report function to add error filtering logic.
-	report := pass.Report
-	pass.Report = func(d analysis.Diagnostic) {
-		p := pass.Fset.File(d.Pos).Name()
-		for _, e := range excludes {
-			if strings.HasPrefix(p, e) {
-				return
-			}
-		}
+// Properly parse the error suppression flags.
 
-		for _, i := range includes {
-			if strings.HasPrefix(p, i) {
-				report(d)
-				return
-			}
-		}
-	}
+// Override the report function to add error filtering logic.
 
-	// Delegate the real analysis run to the original nilaway analyzer.
-	return nilaway.Analyzer.Run(p)
-}
+// Delegate the real analysis run to the original nilaway analyzer.
 
 // parseFilePrefixes parses the comma-separated list of file prefixes, converts them to absolute
 // file paths, and returns them as a slice.
-func parseFilePrefixes(s string) ([]string, error) {
-	if s == "" {
-		return nil, nil
-	}
+func parseFilePrefixes(s string) ([]string, error) { _ = "STUB: not implemented"; return nil, nil }
 
-	// Convert the file paths to absolute paths.
-	list := strings.Split(s, ",")
-	for i := range list {
-		p, err := filepath.Abs(list[i])
-		if err != nil {
-			return nil, fmt.Errorf("convert %q to absolute path: %w", list[i], err)
-		}
-		list[i] = p
-	}
-	return list, nil
-}
+// Convert the file paths to absolute paths.
 
 func main() {
 	// For better UX, we lift the flags from config.Analyzer to the top level so that users can

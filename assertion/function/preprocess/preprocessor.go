@@ -26,6 +26,4 @@ type Preprocessor struct {
 }
 
 // New returns a new Preprocessor.
-func New(pass *analysishelper.EnhancedPass) *Preprocessor {
-	return &Preprocessor{pass: pass}
-}
+func New(pass *analysishelper.EnhancedPass) *Preprocessor { _ = "STUB: not implemented"; return nil }

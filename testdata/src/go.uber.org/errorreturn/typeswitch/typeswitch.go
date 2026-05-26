@@ -13,4 +13,3 @@ func bb() {
 		_ = *ptr // safe: err is nil in this case, so ptr must be non-nil
 	}
 }
-

@@ -16,13 +16,10 @@ package hook
 
 import (
 	"go/ast"
-	"go/types"
 	"regexp"
 
 	"go.uber.org/nilaway/annotation"
 	"go.uber.org/nilaway/util/analysishelper"
-	"go.uber.org/nilaway/util/asthelper"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 // AssumeReturn returns the producer for the return value of the given call expression, which would
@@ -30,18 +27,12 @@ import (
 // functions that are not analyzed by NilAway. For example, "errors.New" is assumed to return a
 // nonnil value. If the given call expression does not match any known function, nil is returned.
 func AssumeReturn(pass *analysishelper.EnhancedPass, call *ast.CallExpr) *annotation.ProduceTrigger {
-	if trigger := matchTrustedFuncs(pass, call); trigger != nil {
-		return trigger
-	}
-	return AssumeReturnForErrorWrapperFunc(pass, call)
+	_ = "STUB: not implemented"
+	return nil
 }
 
 func matchTrustedFuncs(pass *analysishelper.EnhancedPass, call *ast.CallExpr) *annotation.ProduceTrigger {
-	for sig, act := range _assumeReturns {
-		if sig.match(pass, call) {
-			return act(call)
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -49,9 +40,7 @@ func matchTrustedFuncs(pass *analysishelper.EnhancedPass, call *ast.CallExpr) *a
 // an error wrapper function. This is useful for modeling the return value of error wrapper functions like
 // `errors.Wrapf(err, "message")` to return a non-nil error. If the given call expression is not an error wrapper, nil is returned.
 func AssumeReturnForErrorWrapperFunc(pass *analysishelper.EnhancedPass, call *ast.CallExpr) *annotation.ProduceTrigger {
-	if isErrorWrapperFunc(pass, call) {
-		return nonnilProducer(call)
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
@@ -62,71 +51,30 @@ var _newErrorFuncNameRegex = regexp.MustCompile(`(?i)new[^ ]*error[^ ]*`)
 // - the function must have at least one argument of error-implementing type, and
 // - the function must return an error-implementing type as its last return value.
 func isErrorWrapperFunc(pass *analysishelper.EnhancedPass, call *ast.CallExpr) bool {
-	funcIdent := asthelper.FuncIdentFromCallExpr(call)
-	if funcIdent == nil {
-		return false
-	}
-
-	// Return early if the function object is nil or does not return an error.
-	var funcObj *types.Func
-	if obj := pass.TypesInfo.ObjectOf(funcIdent); obj != nil {
-		if fObj, ok := obj.(*types.Func); ok {
-			if typeshelper.FuncIsErrReturning(typeshelper.GetFuncSignature(fObj.Signature())) {
-				funcObj = fObj
-			}
-		}
-	}
-	if funcObj == nil {
-		return false
-	}
-
-	// Check if the function is an error wrapper: consumes an error and returns an error.
-	for _, arg := range call.Args {
-		// Check if the argument is a call expression.
-		if callExpr, ok := arg.(*ast.CallExpr); ok {
-			if matchTrustedFuncs(pass, callExpr) != nil {
-				// Check if the argument is a trusted error returning function call.
-				// Example: `wrapError(errors.New("new error"))`
-				return true
-			}
-
-			// This is to cover the case `NewInternalError(err.Error())` where the argument is a method call on an error.
-			// We want to extract the raw error argument `err` in this case.
-			if s, ok := callExpr.Fun.(*ast.SelectorExpr); ok {
-				t := pass.TypesInfo.TypeOf(s.X)
-				if t != nil && typeshelper.ImplementsError(t) {
-					return true
-				}
-			}
-
-			// Recursively check if the argument is an error wrapper function call.
-			// Example: `wrapError(wrapError(wrapError(err)))`
-			if isErrorWrapperFunc(pass, callExpr) {
-				return true
-			}
-		}
-
-		argType := pass.TypesInfo.TypeOf(arg)
-		if argType != nil && typeshelper.ImplementsError(argType) {
-			// Return the raw error argument expression
-			return true
-		}
-	}
-
-	// Check if the function is creating a new error:
-	// - consumes a message string and returns an error
-	// - matches regex "new*error" as its function name (e.g., `NewInternalError()`)
-	if _newErrorFuncNameRegex.MatchString(funcObj.Name()) {
-		for i := 0; i < funcObj.Signature().Params().Len(); i++ {
-			param := funcObj.Signature().Params().At(i)
-			if t, ok := param.Type().(*types.Basic); ok && t.Kind() == types.String && i < len(call.Args) {
-				return true
-			}
-		}
-	}
-
+	_ = "STUB: not implemented"
 	return false
 }
+
+// Return early if the function object is nil or does not return an error.
+
+// Check if the function is an error wrapper: consumes an error and returns an error.
+
+// Check if the argument is a call expression.
+
+// Check if the argument is a trusted error returning function call.
+// Example: `wrapError(errors.New("new error"))`
+
+// This is to cover the case `NewInternalError(err.Error())` where the argument is a method call on an error.
+// We want to extract the raw error argument `err` in this case.
+
+// Recursively check if the argument is an error wrapper function call.
+// Example: `wrapError(wrapError(wrapError(err)))`
+
+// Return the raw error argument expression
+
+// Check if the function is creating a new error:
+// - consumes a message string and returns an error
+// - matches regex "new*error" as its function name (e.g., `NewInternalError()`)
 
 type assumeReturnAction func(call *ast.CallExpr) *annotation.ProduceTrigger
 

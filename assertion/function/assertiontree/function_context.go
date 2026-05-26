@@ -83,54 +83,28 @@ func NewFunctionContext(
 	pkgFakeIdentMap map[*ast.Ident]types.Object,
 	funcContracts functioncontracts.Map,
 ) FunctionContext {
-	return FunctionContext{
-		pass:                    pass,
-		funcDecl:                decl,
-		funcLit:                 funcLit,
-		fakeIdentMap:            make(map[*ast.Ident]types.Object),
-		selectorExpressionCache: make(SelectorExprMap),
-		functionConfig:          functionConfig,
-		funcLitMap:              funcLitMap,
-		pkgFakeIdentMap:         pkgFakeIdentMap,
-		funcContracts:           funcContracts,
-	}
+	_ = "STUB: not implemented"
+	return *new(FunctionContext)
 }
 
 // getCachedSelectorExpr returns cached selector expression. It returns artificially created ast expression. Which is cached to
 // avoid duplication of triggers.
 // if not present in the cache creates a new expression and adds it to the cache.
 func (fc *FunctionContext) getCachedSelectorExpr(fieldDecl *types.Var, fieldOf ast.Expr, fieldIdent *ast.Ident) *ast.SelectorExpr {
-	selectorExpressionCache := fc.selectorExpressionCache
-	if _, ok := selectorExpressionCache[fieldOf]; !ok {
-		selectorExpressionCache[fieldOf] = make(map[*types.Var]*ast.SelectorExpr)
-	}
-
-	if selExpr, ok := selectorExpressionCache[fieldOf][fieldDecl]; ok {
-		return selExpr
-	}
-
-	selExpr := &ast.SelectorExpr{
-		Sel: fieldIdent,
-		X:   fieldOf,
-	}
-
-	// TODO: This check should ideally be not necessary but currently Nilaway reporting FP
-	if fieldMap, ok := selectorExpressionCache[fieldOf]; ok {
-		fieldMap[fieldDecl] = selExpr
-	}
-
-	return selExpr
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// TODO: This check should ideally be not necessary but currently Nilaway reporting FP
 
 // AddFakeIdent adds fake ident to fakeIdentMap
 func (fc *FunctionContext) AddFakeIdent(ident *ast.Ident, obj types.Object) {
-	fc.fakeIdentMap[ident] = obj
+	_ = "STUB: not implemented"
+	return
 }
 
 // findFakeIdent returns the object mapped to ident from fakeIdentMap
 func (fc *FunctionContext) findFakeIdent(ident *ast.Ident) types.Object {
-	if obj, ok := fc.fakeIdentMap[ident]; ok {
-		return obj
-	}
-	return fc.pkgFakeIdentMap[ident]
+	_ = "STUB: not implemented"
+	return *new(types.Object)
 }

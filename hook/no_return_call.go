@@ -17,7 +17,6 @@ package hook
 import (
 	"go/ast"
 	"regexp"
-	"slices"
 
 	"go.uber.org/nilaway/util/analysishelper"
 )
@@ -31,7 +30,8 @@ import (
 //
 // `testing.TB.Fatal`-related: they are interface methods without implementations.
 func IsNoReturnCall(pass *analysishelper.EnhancedPass, call *ast.CallExpr) bool {
-	return slices.ContainsFunc(_terminatingCalls, func(sig trustedFuncSig) bool { return sig.match(pass, call) })
+	_ = "STUB: not implemented"
+	return false
 }
 
 var _terminatingCalls = []trustedFuncSig{

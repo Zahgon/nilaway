@@ -16,10 +16,7 @@ package preprocess
 
 import (
 	"go/ast"
-	"go/types"
-	"slices"
 
-	"golang.org/x/tools/go/analysis/passes/ctrlflow"
 	"golang.org/x/tools/go/cfg"
 )
 
@@ -52,78 +49,25 @@ const (
 // in general.
 // TODO: remove this once anonymous function support handles it naturally.
 func (p *Preprocessor) inlineTemplComponentFuncLit(graph *cfg.CFG, funcDecl *ast.FuncDecl) {
-	funcLit, returnStmt := p.extractTemplComponentFuncLit(funcDecl)
-	// If the function is not a templ component function, we don't need to do anything.
-	if funcLit == nil || returnStmt == nil {
-		return
-	}
-
-	cfgs := p.pass.ResultOf[ctrlflow.Analyzer].(*ctrlflow.CFGs)
-	// Now, we "inline" the function literal by replacing the CFG of the function with the CFG of
-	// the function literal.
-	graph.Blocks = slices.Clone(cfgs.FuncLit(funcLit).Blocks)
-	for _, b := range graph.Blocks {
-		if !b.Live || len(b.Nodes) == 0 {
-			continue
-		}
-
-		// Replace the inner return statements inside the function literal with the real return
-		// statement, this helps NilAway to understand the return value is non-nil.
-		for i, node := range b.Nodes {
-			if _, ok := node.(*ast.ReturnStmt); ok {
-				b.Nodes[i] = returnStmt
-			}
-		}
-	}
+	_ = "STUB: not implemented"
+	return
 }
+
+// If the function is not a templ component function, we don't need to do anything.
+
+// Now, we "inline" the function literal by replacing the CFG of the function with the CFG of
+// the function literal.
+
+// Replace the inner return statements inside the function literal with the real return
+// statement, this helps NilAway to understand the return value is non-nil.
 
 func (p *Preprocessor) extractTemplComponentFuncLit(funcDecl *ast.FuncDecl) (*ast.FuncLit, *ast.ReturnStmt) {
+	_ = "STUB: not implemented"
 	// Check if the function returns a single result of type `templ.Component`.
-	if funcDecl == nil || funcDecl.Type == nil || funcDecl.Type.Results == nil || len(funcDecl.Type.Results.List) != 1 {
-		return nil, nil
-	}
-	named, ok := p.pass.TypesInfo.TypeOf(funcDecl.Type.Results.List[0].Type).(*types.Named)
-	if !ok {
-		return nil, nil
-	}
-	obj := named.Obj()
-	if obj == nil || obj.Pkg() == nil || (obj.Pkg().Path() != _templPkgPath && obj.Pkg().Path() != "stubs/"+_templPkgPath) || obj.Name() != "Component" {
-		return nil, nil
-	}
-
-	// Check if the function contains only a single return statement that calls
-	// `templruntime.GeneratedTemplate(func() { ... })`.
-	if funcDecl.Body == nil || len(funcDecl.Body.List) != 1 {
-		return nil, nil
-	}
-	returnStmt, ok := funcDecl.Body.List[0].(*ast.ReturnStmt)
-	if !ok {
-		return nil, nil
-	}
-	if len(returnStmt.Results) != 1 {
-		return nil, nil
-	}
-	callExpr, ok := returnStmt.Results[0].(*ast.CallExpr)
-	if !ok {
-		return nil, nil
-	}
-	sel, ok := callExpr.Fun.(*ast.SelectorExpr)
-	if !ok {
-		return nil, nil
-	}
-	funObj := p.pass.TypesInfo.ObjectOf(sel.Sel)
-	if funObj == nil || (funObj.Pkg().Path() != _templRuntimePkgPath && funObj.Pkg().Path() != "stubs/"+_templRuntimePkgPath) || funObj.Name() != "GeneratedTemplate" {
-		return nil, nil
-	}
-
-	// Check if the first argument is a function literal.
-	if len(callExpr.Args) != 1 {
-		return nil, nil
-	}
-	funcLit, ok := callExpr.Args[0].(*ast.FuncLit)
-	if !ok {
-		return nil, nil
-	}
-
-	return funcLit, returnStmt
+	return nil, nil
 }
+
+// Check if the function contains only a single return statement that calls
+// `templruntime.GeneratedTemplate(func() { ... })`.
+
+// Check if the first argument is a function literal.

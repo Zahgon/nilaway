@@ -17,7 +17,6 @@
 package assertion
 
 import (
-	"errors"
 	"reflect"
 
 	"go.uber.org/nilaway/annotation"
@@ -44,26 +43,10 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(p *analysis.Pass) ([]annotation.FullTrigger, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-
-	if !conf.IsPkgInScope(pass.Pkg) {
-		return nil, nil
-	}
-
-	// Collect and merge the results from sub-analyzers.
-	r1 := pass.ResultOf[function.Analyzer].(*analysishelper.Result[[]annotation.FullTrigger])
-	r2 := pass.ResultOf[affiliation.Analyzer].(*analysishelper.Result[[]annotation.FullTrigger])
-	r3 := pass.ResultOf[global.Analyzer].(*analysishelper.Result[[]annotation.FullTrigger])
-	if err := errors.Join(r1.Err, r2.Err, r3.Err); err != nil {
-		return nil, err
-	}
-
-	// Merge full triggers.
-	triggers := make([]annotation.FullTrigger, 0, len(r1.Res)+len(r2.Res)+len(r3.Res))
-	for _, t := range [...][]annotation.FullTrigger{r1.Res, r2.Res, r3.Res} {
-		triggers = append(triggers, t...)
-	}
-
-	return triggers, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }
+
+// Collect and merge the results from sub-analyzers.
+
+// Merge full triggers.

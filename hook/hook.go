@@ -21,11 +21,9 @@ package hook
 import (
 	"go/ast"
 	"go/token"
-	"go/types"
 	"regexp"
 
 	"go.uber.org/nilaway/util/analysishelper"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 // funcKind indicates the kind of the trusted function:
@@ -49,48 +47,24 @@ type trustedFuncSig struct {
 // it performs a strict matching for the function / method name and a user-defined regex match for
 // the enclosing package or struct path.
 func (t *trustedFuncSig) match(pass *analysishelper.EnhancedPass, call *ast.CallExpr) bool {
-	sel, ok := call.Fun.(*ast.SelectorExpr)
-	if !ok || !t.funcNameRegex.MatchString(sel.Sel.Name) {
-		return false
-	}
-
-	// Match fully qualified path of the call expression with the expected path specified in `t`
-	// if function, match enclosing "<pkg path>". E.g., for `assert.Error(err)`, path = github.com/stretchr/testify/assert
-	// if method, match with "<pkg path>.<struct name>". E.g., for `u.Require().Error(err)`, path = github.com/stretchr/testify/require.Assertions
-	if funcObj, ok := pass.TypesInfo.ObjectOf(sel.Sel).(*types.Func); ok && funcObj.Pkg() != nil {
-		recv := funcObj.Type().(*types.Signature).Recv()
-		path := funcObj.Pkg().Path()
-
-		// return early if the kind of `t` and `funcObj` don't match. Both should be functions (or methods) for the match to be performed
-		// `recv != nil` implies `funcObj` is a method, while `recv == nil` means it is a function
-		if (t.kind == _func && recv != nil) || (t.kind == _method && recv == nil) {
-			return false
-		}
-
-		// add struct name to the path
-		if recv != nil {
-			if n, ok := typeshelper.UnwrapPtr(recv.Type()).(*types.Named); ok {
-				path = path + "." + n.Obj().Name()
-			} else {
-				// we should likely never hit this case, but is only added for extra safety since
-				// `util.TypeAsDeeplyNamed` can return nil
-				return false
-			}
-		}
-		return t.enclosingRegex.MatchString(path)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
+// Match fully qualified path of the call expression with the expected path specified in `t`
+// if function, match enclosing "<pkg path>". E.g., for `assert.Error(err)`, path = github.com/stretchr/testify/assert
+// if method, match with "<pkg path>.<struct name>". E.g., for `u.Require().Error(err)`, path = github.com/stretchr/testify/require.Assertions
+
+// return early if the kind of `t` and `funcObj` don't match. Both should be functions (or methods) for the match to be performed
+// `recv != nil` implies `funcObj` is a method, while `recv == nil` means it is a function
+
+// add struct name to the path
+
+// we should likely never hit this case, but is only added for extra safety since
+// `util.TypeAsDeeplyNamed` can return nil
+
 // newNilBinaryExpr creates a new binary expression "expr op nil".
 func newNilBinaryExpr(expr ast.Expr, op token.Token) *ast.BinaryExpr {
-	return &ast.BinaryExpr{
-		X:     expr,
-		OpPos: expr.Pos(),
-		Op:    op,
-		Y: &ast.Ident{
-			NamePos: expr.Pos(),
-			Name:    "nil",
-		},
-	}
+	_ = "STUB: not implemented"
+	return nil
 }

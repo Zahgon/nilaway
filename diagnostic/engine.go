@@ -18,17 +18,11 @@
 package diagnostic
 
 import (
-	"cmp"
-	"fmt"
 	"go/token"
-	"slices"
-	"strings"
 
 	"go.uber.org/nilaway/annotation"
-	"go.uber.org/nilaway/config"
 	"go.uber.org/nilaway/inference"
 	"go.uber.org/nilaway/util/analysishelper"
-	"go.uber.org/nilaway/util/tokenhelper"
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -51,37 +45,20 @@ type Engine struct {
 
 // NewEngine creates a new diagnostic engine.
 func NewEngine(pass *analysishelper.EnhancedPass) *Engine {
+	_ = "STUB: not implemented"
 	// Iterate all files within the Fset (which includes upstream and current-package files), and
 	// store the mapping between its file name (modulo the possible build-system prefix) and the
 	// token.File object. This is needed for converting correct upstream position back to local
 	// incorrect token.Pos for error reporting purposes. Also see
 	// [inference.primitivizer.toPosition] for more detailed explanations.
-	files := make(map[string]fileInfo)
-	pass.Fset.Iterate(func(file *token.File) bool {
-		// For files that are not in the execroot (e.g., stdlib files start with "$GOROOT", and
-		// upstream files that do not have the build-system prefix), it simply returns the original.
-		name := tokenhelper.RelToCwd(file.Name())
-
-		// The file will be fake (conceptually "\n" * 65535) if it is imported from archive. So we
-		// check if there are any gaps between the line starts to determine if the file is fake.
-		isFake := true
-		prev := -1
-		for _, pos := range file.Lines() {
-			if prev != -1 && pos-prev > 1 {
-				isFake = false
-				break
-			}
-			prev = pos
-		}
-		files[name] = fileInfo{
-			file:   file,
-			isFake: isFake,
-		}
-		return true
-	})
-
-	return &Engine{pass: pass, files: files}
+	return nil
 }
+
+// For files that are not in the execroot (e.g., stdlib files start with "$GOROOT", and
+// upstream files that do not have the build-system prefix), it simply returns the original.
+
+// The file will be fake (conceptually "\n" * 65535) if it is imported from archive. So we
+// check if there are any gaps between the line starts to determine if the file is fake.
 
 // Diagnostics generates diagnostics from the internally-stored conflicts. The grouping parameter
 // controls whether the conflicts with the same nil flow -- the part in the complete nil flow going
@@ -89,115 +66,48 @@ func NewEngine(pass *analysishelper.EnhancedPass) *Engine {
 // diagnostic) for concise reporting. The returned slice of diagnostics are sorted by file names
 // and then offsets in the file.
 func (e *Engine) Diagnostics(grouping bool) []analysis.Diagnostic {
+	_ = "STUB: not implemented"
 	// First sort the conflicts by position such that similar conflicts are grouped under the
 	// first diagnostic.
-	slices.SortFunc(e.conflicts, func(a, b conflict) int {
-		if n := cmp.Compare(a.position.Filename, b.position.Filename); n != 0 {
-			return n
-		}
-		return cmp.Compare(a.position.Offset, b.position.Offset)
-	})
-
-	conflicts := e.conflicts
-	if grouping {
-		// Group conflicts with the same nil path together for concise reporting.
-		conflicts = groupConflicts(e.conflicts, e.pass)
-	}
-
-	// Build diagnostics from conflicts. Apply cross-package nolint suppressions here as well.
-	nolintResult := e.pass.ResultOf[NoLintAnalyzer].(*analysishelper.Result[[]Range])
-	if nolintResult.Err != nil {
-		panic(fmt.Sprintf("failed to get nolint ranges: %v", nolintResult.Err))
-	}
-	nolintRanges := nolintResult.Res
-
-	conf := e.pass.ResultOf[config.Analyzer].(*config.Config)
-
-	diagnostics := make([]analysis.Diagnostic, 0, len(conflicts))
-	for _, c := range conflicts {
-		if slices.ContainsFunc(nolintRanges, func(r Range) bool {
-			return c.position.Filename == r.Filename && c.position.Line >= r.From && c.position.Line <= r.To
-		}) {
-			continue
-		}
-		if conf.ExcludeTestFiles && involvesTestFile(c) {
-			continue
-		}
-		diagnostics = append(diagnostics, analysis.Diagnostic{
-			Pos:     e.toPos(c.position),
-			Message: c.String(),
-		})
-	}
-	return diagnostics
+	return nil
 }
+
+// Group conflicts with the same nil path together for concise reporting.
+
+// Build diagnostics from conflicts. Apply cross-package nolint suppressions here as well.
 
 // AddSingleAssertionConflict adds a new single assertion conflict to the engine.
 func (e *Engine) AddSingleAssertionConflict(trigger annotation.FullTrigger) {
-	producer, consumer := trigger.Prestrings(e.pass)
-	flow := nilFlow{}
-	flow.addNonNilPathNode(producer, consumer)
-
-	position := e.pass.Fset.Position(trigger.Consumer.Expr.Pos())
-	// Try to trim the build system prefix (i.e., the current working directory) if present.
-	position.Filename = tokenhelper.RelToCwd(position.Filename)
-	e.conflicts = append(e.conflicts, conflict{
-		position: position,
-		flow:     flow,
-	})
+	_ = "STUB: not implemented"
+	return
 }
+
+// Try to trim the build system prefix (i.e., the current working directory) if present.
 
 // AddOverconstraintConflict adds a new overconstraint conflict to the engine.
 func (e *Engine) AddOverconstraintConflict(nilReason, nonnilReason inference.ExplainedBool) {
-	flow := nilFlow{}
+	_ = "STUB: not implemented"
 
 	// Build nil path by traversing the inference graph from `nilReason` part of the overconstraint failure.
 	// (Note that this traversal gives us a backward path from point of conflict to the source of nilability. Hence, we
 	// must take this into consideration while printing the flow, which is currently being handled in `addNilPathNode()`.)
-	for r := nilReason; r != nil; r = r.DeeperReason() {
-		producer, consumer := r.TriggerReprs()
-		// We have two cases here:
-		// 1. No annotation present (i.e., full inference): we have producer and consumer explanations available; use them directly
-		// 2: Annotation present (i.e., no inference): we construct the reason from the annotation string
-		if producer != nil && consumer != nil {
-			flow.addNilPathNode(producer, consumer)
-		} else {
-			flow.addNilPathNode(annotation.LocatedPrestring{
-				Contained: r,
-				Location:  e.pass.HumanReadablePosition(r.Position()),
-			}, nil)
-		}
-	}
-
-	// Build nonnil path by traversing the inference graph from `nonnilReason` part of the overconstraint failure.
-	// (Note that this traversal is forward from the point of conflict to dereference. Hence, we don't need to make
-	// any special considerations while printing the flow.)
-	// Different from building the nil path above, here we also want to deduce the position where the error should be reported,
-	// i.e., the point of dereference where the nil panic would occur. In NilAway's context this is the last node
-	// in the non-nil path. Therefore, we keep updating `c.pos` until we reach the end of the non-nil path.
-	var reportPosition token.Position
-	for r := nonnilReason; r != nil; r = r.DeeperReason() {
-		producer, consumer := r.TriggerReprs()
-		position := r.Position()
-		// Similar to above, we have two cases here:
-		// 1. No annotation present (i.e., full inference): we have producer and consumer explanations available; use them directly
-		// 2: Annotation present (i.e., no inference): we construct the reason from the annotation string
-		if producer != nil && consumer != nil {
-			flow.addNonNilPathNode(producer, consumer)
-			reportPosition = position
-		} else {
-			flow.addNonNilPathNode(annotation.LocatedPrestring{
-				Contained: r,
-				Location:  e.pass.HumanReadablePosition(r.Position()),
-			}, nil)
-			reportPosition = position
-		}
-	}
-
-	e.conflicts = append(e.conflicts, conflict{
-		position: reportPosition,
-		flow:     flow,
-	})
+	return
 }
+
+// We have two cases here:
+// 1. No annotation present (i.e., full inference): we have producer and consumer explanations available; use them directly
+// 2: Annotation present (i.e., no inference): we construct the reason from the annotation string
+
+// Build nonnil path by traversing the inference graph from `nonnilReason` part of the overconstraint failure.
+// (Note that this traversal is forward from the point of conflict to dereference. Hence, we don't need to make
+// any special considerations while printing the flow.)
+// Different from building the nil path above, here we also want to deduce the position where the error should be reported,
+// i.e., the point of dereference where the nil panic would occur. In NilAway's context this is the last node
+// in the non-nil path. Therefore, we keep updating `c.pos` until we reach the end of the non-nil path.
+
+// Similar to above, we have two cases here:
+// 1. No annotation present (i.e., full inference): we have producer and consumer explanations available; use them directly
+// 2: Annotation present (i.e., no inference): we construct the reason from the annotation string
 
 // _fakeFileMaxLines is the maximum number of lines that the archive importer will add to a (fake)
 // file when it imports a package. See [the importer code] for more details. We use this to create
@@ -210,50 +120,33 @@ const _fakeFileMaxLines = 64 * 1024
 // inference, so the position might not exist in the local Fset. In such cases, we pad the local
 // Fset for correct reporting.
 func (e *Engine) toPos(position token.Position) token.Pos {
-	info, ok := e.files[position.Filename]
-	if !ok {
-		// For incremental build systems like bazel, the pass.Fset contains only the files in
-		// current and _directly_ imported packages (see [gcexportdata] for more details). However,
-		// analyzer facts are imported transitively from all imported packages, and NilAway is able
-		// to operate across all those packages. As a result, if NilAway ever needs to report an
-		// error on a file from a transitively imported package, we need to create a fake file in
-		// the file set.
-		// [gcexportdata]: https://pkg.go.dev/golang.org/x/tools/go/gcexportdata
-		file := e.pass.Fset.AddFile(position.Filename, e.pass.Fset.Base(), _fakeFileMaxLines)
-		// Set up fake lines for the fake file.
-		fakeLines := make([]int, position.Line)
-		for i := range fakeLines {
-			fakeLines[i] = i
-		}
-		file.SetLines(fakeLines)
-		info = fileInfo{file: file, isFake: true}
-		e.files[position.Filename] = info
-	}
-
-	if info.isFake {
-		// If the file is fake (imported from archive), it may not contain fake lines for unexported
-		// objects (as an "optimization", see [importer code]). However, NilAway may report errors
-		// on unexported objects due to multi-package inference. In such cases, we pad the file with
-		// more fake lines.
-		// [importer code]: https://cs.opensource.google/go/x/tools/+/refs/tags/v0.12.0:internal/gcimporter/bimport.go;l=36-69;drc=ad74ff6345e3663a8f1a4ba5c6e85d54a6fd5615
-		if position.Line > info.file.LineCount() {
-			// We are adding offsets to fake lines here, and offset == fake line number - 1. So we
-			// can start from the current max line number to the desired line number - 1.
-			for i := info.file.LineCount(); i < position.Line; i++ {
-				info.file.AddLine(i)
-			}
-		}
-
-		// For fake files, we can only report accurate line number but not column number.
-		return info.file.LineStart(position.Line)
-	}
-
-	// For non-fake files, the position is accurate.
-	return info.file.Pos(position.Offset)
+	_ = "STUB: not implemented"
+	return *new(token.Pos)
 }
+
+// For incremental build systems like bazel, the pass.Fset contains only the files in
+// current and _directly_ imported packages (see [gcexportdata] for more details). However,
+// analyzer facts are imported transitively from all imported packages, and NilAway is able
+// to operate across all those packages. As a result, if NilAway ever needs to report an
+// error on a file from a transitively imported package, we need to create a fake file in
+// the file set.
+// [gcexportdata]: https://pkg.go.dev/golang.org/x/tools/go/gcexportdata
+
+// Set up fake lines for the fake file.
+
+// If the file is fake (imported from archive), it may not contain fake lines for unexported
+// objects (as an "optimization", see [importer code]). However, NilAway may report errors
+// on unexported objects due to multi-package inference. In such cases, we pad the file with
+// more fake lines.
+// [importer code]: https://cs.opensource.google/go/x/tools/+/refs/tags/v0.12.0:internal/gcimporter/bimport.go;l=36-69;drc=ad74ff6345e3663a8f1a4ba5c6e85d54a6fd5615
+
+// We are adding offsets to fake lines here, and offset == fake line number - 1. So we
+// can start from the current max line number to the desired line number - 1.
+
+// For fake files, we can only report accurate line number but not column number.
+
+// For non-fake files, the position is accurate.
 
 // involvesTestFile returns true if the conflict's report position or any node position in the
 // nil flow originates from a test file (i.e., a file ending with "_test.go").
-func involvesTestFile(c conflict) bool {
-	return strings.HasSuffix(c.position.Filename, "_test.go") || c.flow.involvesTestFile()
-}
+func involvesTestFile(c conflict) bool { _ = "STUB: not implemented"; return false }

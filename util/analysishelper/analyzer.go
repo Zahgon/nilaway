@@ -16,9 +16,6 @@
 package analysishelper
 
 import (
-	"fmt"
-	"runtime/debug"
-
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -39,28 +36,9 @@ type Result[T any] struct {
 // Moreover, it also wraps the error from the sub-analyzer with the name of the analyzer to make
 // it easier to identify the source of the error.
 func WrapRun[T any](f func(*analysis.Pass) (T, error)) func(*analysis.Pass) (any, error) {
-	wrapped := func(pass *analysis.Pass) (result any, _ error) {
-		result = &Result[T]{}
-		analyzerName := ""
-		if pass != nil && pass.Analyzer != nil {
-			analyzerName = pass.Analyzer.Name
-		}
-		defer func() {
-			if r := recover(); r != nil {
-				result.(*Result[T]).Err = fmt.Errorf("INTERNAL PANIC from %q: %s\n%s", analyzerName, r, string(debug.Stack()))
-			}
-		}()
-
-		r, err := f(pass)
-		if err != nil {
-			// Prefix the error with the name of the analyzer to make it easier to identify the source
-			// of the error.
-			err = fmt.Errorf("%s: %w", analyzerName, err)
-		}
-		result.(*Result[T]).Res = r
-		result.(*Result[T]).Err = err
-		return result, nil
-	}
-
-	return wrapped
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Prefix the error with the name of the analyzer to make it easier to identify the source
+// of the error.

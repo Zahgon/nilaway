@@ -17,7 +17,6 @@
 package structfield
 
 import (
-	"go/ast"
 	"reflect"
 
 	"go.uber.org/nilaway/config"
@@ -36,27 +35,4 @@ var Analyzer = &analysis.Analyzer{
 	Requires:   []*analysis.Analyzer{config.Analyzer},
 }
 
-func run(p *analysis.Pass) (*FieldContext, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-
-	fieldContext := &FieldContext{fieldMap: make(relevantFieldsMap)}
-
-	if !conf.IsPkgInScope(pass.Pkg) {
-		return fieldContext, nil
-	}
-
-	for _, file := range pass.Files {
-		if !conf.IsFileInScope(file) {
-			continue
-		}
-
-		for _, decl := range file.Decls {
-			if funcDecl, ok := decl.(*ast.FuncDecl); ok {
-				fieldContext.processFunc(funcDecl, pass)
-			}
-		}
-	}
-
-	return fieldContext, nil
-}
+func run(p *analysis.Pass) (*FieldContext, error) { _ = "STUB: not implemented"; return nil, nil }

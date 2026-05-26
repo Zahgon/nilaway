@@ -32,23 +32,34 @@ type DeepParsedProducer struct {
 
 // GetShallow for a DeepParsedProducer returns the ProduceTrigger producing the value itself
 func (dp DeepParsedProducer) GetShallow() *annotation.ProduceTrigger {
-	return dp.ShallowProducer
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetDeep for a DeepParsedProducer returns the ProduceTrigger producing indices of the value
 }
 
-// GetDeep for a DeepParsedProducer returns the ProduceTrigger producing indices of the value
 func (dp DeepParsedProducer) GetDeep() *annotation.ProduceTrigger {
-	return dp.DeepProducer
+	_ = "STUB: not implemented"
+	return nil
+
+	// GetFieldProducers returns field producers
 }
 
-// GetFieldProducers returns field producers
 func (dp DeepParsedProducer) GetFieldProducers() []*annotation.ProduceTrigger {
-	return dp.FieldProducers
+	_ = "STUB: not implemented"
+	return nil
+
+	// IsDeep for a DeepParsedProducer returns true
 }
 
-// IsDeep for a DeepParsedProducer returns true
-func (dp DeepParsedProducer) IsDeep() bool { return true }
+func (dp DeepParsedProducer) IsDeep() bool {
+	_ = "STUB: not implemented"
 
-// GetDeepSlice for a DeepParsedProducer returns a singular slice containing the deep ProduceTrigger
+	// GetDeepSlice for a DeepParsedProducer returns a singular slice containing the deep ProduceTrigger
+	return false
+}
+
 func (dp DeepParsedProducer) GetDeepSlice() []*annotation.ProduceTrigger {
-	return []*annotation.ProduceTrigger{dp.DeepProducer}
+	_ = "STUB: not implemented"
+	return nil
 }

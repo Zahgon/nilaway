@@ -15,10 +15,8 @@
 package annotation
 
 import (
-	"fmt"
 	"go/token"
 
-	"go.uber.org/nilaway/guard"
 	"go.uber.org/nilaway/util/analysishelper"
 )
 
@@ -44,51 +42,42 @@ type FullTrigger struct {
 
 // Controlled returns true if this full trigger is controlled by a controller site; otherwise
 // returns false.
-func (t *FullTrigger) Controlled() bool {
-	return t.Controller != nil
-}
+func (t *FullTrigger) Controlled() bool { _ = "STUB: not implemented"; return false }
 
 // Pos returns the position for logging the error specified by the ConsumeTrigger
 func (t *FullTrigger) Pos() token.Pos {
-	return t.Consumer.Pos()
+	_ = "STUB: not implemented"
+	return *
+
+	// Check is a boolean test that determines whether this FullTrigger should be triggered against the Annotation map `annMap`
+	new(token.Pos)
 }
 
-// Check is a boolean test that determines whether this FullTrigger should be triggered against the Annotation map `annMap`
-func (t *FullTrigger) Check(annMap Map) bool {
-	return t.Producer.Annotation.CheckProduce(annMap) &&
-		t.Consumer.Annotation.CheckConsume(annMap)
-}
+func (t *FullTrigger) Check(annMap Map) bool { _ = "STUB: not implemented"; return false }
 
 func (t *FullTrigger) truncatedConsumerPos(pass *analysishelper.EnhancedPass) token.Position {
-	return pass.PosToLocation(t.Consumer.Pos())
+	_ = "STUB: not implemented"
+	return *new(token.Position)
 }
 
 func (t *FullTrigger) truncatedProducerPos(pass *analysishelper.EnhancedPass) token.Position {
+	_ = "STUB: not implemented"
 	// Our struct init analysis only tracks fields for depth 1 and relies on escape analysis for
 	// escaped fields (t.Producer.Expr here). Since there are functions that return nil producers
 	// (although they were never assigned to [FullTrigger.Producer]), NilAway concluded that
 	// [ProduceTrigger.Expr] must be nilable. Therefore, we add a redundant check here to guard
 	// against such cases and make NilAway happy.
 	// TODO: remove this redundant check .
-	if t.Producer.Expr == nil {
-		panic(fmt.Sprintf("nil Expr for producer %q", t.Producer))
-	}
-	return pass.PosToLocation(t.Producer.Expr.Pos())
+	return *new(token.Position)
 }
 
 // equals returns true if the two passed FullTriggers are equal, and false otherwise.
-func (t *FullTrigger) equals(other FullTrigger) bool {
-	return t.Producer.Annotation.equals(other.Producer.Annotation) &&
-		t.Consumer.Annotation.equals(other.Consumer.Annotation) &&
-		t.Consumer.Expr == other.Consumer.Expr &&
-		t.Consumer.GuardMatched == other.Consumer.GuardMatched
-}
+func (t *FullTrigger) equals(other FullTrigger) bool { _ = "STUB: not implemented"; return false }
 
 // equalsModuloGuardMatched returns true if the two passed FullTriggers (modulo the GuardMatched field) are equal, and false otherwise.
 func (t *FullTrigger) equalsModuloGuardMatched(other FullTrigger) bool {
-	return t.Producer.Annotation.equals(other.Producer.Annotation) &&
-		t.Consumer.Annotation.equals(other.Consumer.Annotation) &&
-		t.Consumer.Expr == other.Consumer.Expr
+	_ = "STUB: not implemented"
+	return false
 }
 
 // A LocatedPrestring wraps another Prestring with a `token.Position` - for formatting with that position
@@ -97,9 +86,7 @@ type LocatedPrestring struct {
 	Location  token.Position
 }
 
-func (l LocatedPrestring) String() string {
-	return fmt.Sprintf("%s at \"%s\"", l.Contained.String(), l.Location.String())
-}
+func (l LocatedPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // Prestrings returns Prestrings for clauses describing the production and consumption indicated by this
 // FullTrigger, of the forms: "assigned into a field a bar.go:10" or
@@ -113,18 +100,8 @@ func (l LocatedPrestring) String() string {
 // and producers that arise from non-trackable expressions correspond to those real non-trackable
 // expressions.
 func (t *FullTrigger) Prestrings(pass *analysishelper.EnhancedPass) (Prestring, Prestring) {
-	producerPrestring := t.Producer.Annotation.Prestring()
-	if pass.ExprIsAuthentic(t.Producer.Expr) {
-		producerPrestring = LocatedPrestring{
-			Contained: producerPrestring,
-			Location:  t.truncatedProducerPos(pass),
-		}
-	}
-	consumerPrestring := LocatedPrestring{
-		Contained: t.Consumer.Annotation.Prestring(),
-		Location:  t.truncatedConsumerPos(pass),
-	}
-	return producerPrestring, consumerPrestring
+	_ = "STUB: not implemented"
+	return *new(Prestring), *new(Prestring)
 }
 
 // FullTriggerSlicesEq returns true if the two passed slices of FullTriggers contain the same elements. It determines if
@@ -140,24 +117,10 @@ func (t *FullTrigger) Prestrings(pass *analysishelper.EnhancedPass) (Prestring, 
 // RootAssertionNode.ProcessEntry can use checkGuardOnFullTrigger to rewrite the producer based on
 // its value. So if you accept that the producer is needed for equality, you accept that
 // Consumer.GuardMatched is needed for equality.
-func FullTriggerSlicesEq(left, right []FullTrigger) bool {
-	if len(left) != len(right) {
-		return false
-	}
+func FullTriggerSlicesEq(left, right []FullTrigger) bool { _ = "STUB: not implemented"; return false }
 
-	// because we have two sets of the same size, without repetition, to test equality it suffices
-	// to check that one of them contains the other
-	matched := make(map[int]bool)
-	for _, l := range left {
-		for j, r := range right {
-			if l.equals(r) {
-				matched[j] = true
-				break
-			}
-		}
-	}
-	return len(matched) == len(left)
-}
+// because we have two sets of the same size, without repetition, to test equality it suffices
+// to check that one of them contains the other
 
 // MergeFullTriggers creates a union of the passed left and right triggers eliminating duplicates
 // Merging is based on three parameters (out of the four discussed above):
@@ -169,40 +132,11 @@ func FullTriggerSlicesEq(left, right []FullTrigger) bool {
 // checking fixed point in propagation, the function FullTriggersEq
 // that does observe GuardMatched should be used instead of this function.
 func MergeFullTriggers(left []FullTrigger, right ...FullTrigger) []FullTrigger {
-	var out []FullTrigger
-	updateLeftGuard := make(map[int]bool)
-	skipRight := make(map[int]bool)
-
-	for i, l := range left {
-		for j, r := range right {
-			if !l.equalsModuloGuardMatched(r) {
-				continue
-			}
-
-			// Now we know that the two triggers are equal modulo GuardMatched. We should skip adding the right trigger
-			// to `out`. In case of a mismatch in GuardMatched, we update the left trigger to set GuardMatched = false,
-			// because right now, there is no use for guards in FullTriggers. If this changes, then make sure the merged
-			// trigger gets the intersection of the prior guard sets
-			if l.Consumer.GuardMatched && !r.Consumer.GuardMatched {
-				updateLeftGuard[i] = true
-			}
-			skipRight[j] = true
-		}
-	}
-
-	for i, l := range left {
-		if updateLeftGuard[i] {
-			l.Consumer.Guards = guard.NoGuards()
-			l.Consumer.GuardMatched = false
-		}
-		out = append(out, l)
-	}
-
-	for j, r := range right {
-		if !skipRight[j] {
-			out = append(out, r)
-		}
-	}
-
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// Now we know that the two triggers are equal modulo GuardMatched. We should skip adding the right trigger
+// to `out`. In case of a mismatch in GuardMatched, we update the left trigger to set GuardMatched = false,
+// because right now, there is no use for guards in FullTriggers. If this changes, then make sure the merged
+// trigger gets the intersection of the prior guard sets

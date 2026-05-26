@@ -18,11 +18,7 @@
 package gclplugin
 
 import (
-	"fmt"
-
 	"github.com/golangci/plugin-module-register/register"
-	"go.uber.org/nilaway"
-	"go.uber.org/nilaway/config"
 	"golang.org/x/tools/go/analysis"
 )
 
@@ -32,22 +28,9 @@ func init() {
 
 // New returns the golangci-lint plugin that wraps the NilAway analyzer.
 func New(settings any) (register.LinterPlugin, error) {
+	_ = "STUB: not implemented"
 	// Parse the settings to the correct type (map[string]string) similar to command line flags.
-	s, ok := settings.(map[string]any)
-	if !ok {
-		return nil, fmt.Errorf("expect NilAway's configurations to a map from string to "+
-			"string (similar to command line flags), got %T", settings)
-	}
-	conf := make(map[string]string, len(s))
-	for k, v := range s {
-		vStr, ok := v.(string)
-		if !ok {
-			return nil, fmt.Errorf("expect NilAway's configuration values for %q to be strings, got %T", k, v)
-		}
-		conf[k] = vStr
-	}
-
-	return &NilAwayPlugin{conf: conf}, nil
+	return *new(register.LinterPlugin), nil
 }
 
 // NilAwayPlugin is the NilAway plugin wrapper for golangci-lint.
@@ -57,15 +40,10 @@ type NilAwayPlugin struct {
 
 // BuildAnalyzers builds the NilAway analyzer with the configurations applied to the config analyzer.
 func (p *NilAwayPlugin) BuildAnalyzers() ([]*analysis.Analyzer, error) {
+	_ = "STUB: not implemented"
 	// Apply the configurations to the config analyzer.
-	for k, v := range p.conf {
-		if err := config.Analyzer.Flags.Set(k, v); err != nil {
-			return nil, fmt.Errorf("set config flag %s with %s: %w", k, v, err)
-		}
-	}
-
-	return []*analysis.Analyzer{nilaway.Analyzer}, nil
+	return nil, nil
 }
 
 // GetLoadMode returns the load mode of the NilAway plugin (requiring types info).
-func (p *NilAwayPlugin) GetLoadMode() string { return register.LoadModeTypesInfo }
+func (p *NilAwayPlugin) GetLoadMode() string { _ = "STUB: not implemented"; return "" }

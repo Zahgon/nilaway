@@ -31,12 +31,8 @@ import (
 // `if x != nil { <...code after the function call...> }`. This helps NilAway understand the
 // nilability of the arguments after certain functions with side effects.
 func SplitBlockOn(pass *analysishelper.EnhancedPass, call *ast.CallExpr) ast.Expr {
-	for sig, act := range _splitBlockOn {
-		if sig.match(pass, call) {
-			return act.action(pass, call, act.argIndex)
-		}
-	}
-	return nil
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
 
 // splitBlockOnAction defines the effect the trusted function can have on its argument `argIndex`.
@@ -196,59 +192,31 @@ var requireZeroComparators splitBlockOnAction = func(pass *analysishelper.Enhanc
 
 // generateComparators generates comparators based on the semantics of the function.
 func generateComparators(call *ast.CallExpr, actualExpr ast.Expr, actualExprIndex int, expectedVal expectedValue) ast.Expr {
-	sel, ok := call.Fun.(*ast.SelectorExpr)
-	if !ok {
-		return nil
-	}
-	funcName := sel.Sel.Name
-
-	// Now, based on the semantics of the function, we can create artificial nonnil checks for
-	// the following cases.
-	// - slice length comparison. E.g., `Equal(1, len(s))`, implying len(s) > 0, meaning s is nonnil.
-	//   Here, actualExpr is `s` and expectedExprValue is `_greaterThanZero`, which translates to the binary expression
-	//   `s != nil` being added to the CFG. Similarly, for `Equal(len(s), 0)`, we add `s == nil` to the CFG.
-	// - nil comparison. E.g., `Equal(nil, err)`, where actualExpr is `err` and expectedExprValue is `_nil`, which
-	//   translates to the binary expression `err == nil` being added to the CFG.
-	switch funcName {
-	case "Equal", "Equalf", "Empty", "Emptyf": // len(s) == [positive_int], expr == nil
-		switch expectedVal {
-		case _greaterThanZero:
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		case _nil:
-			return newNilBinaryExpr(actualExpr, token.EQL)
-		case _false:
-			return negatedSelfExpr(nil, call, actualExprIndex)
-		}
-	case "NotEqual", "NotEqualf", "NotEmpty", "NotEmptyf": // len(s) != [zero], expr != nil
-		switch expectedVal {
-		case _zero, _nil:
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		case _false:
-			return selfExpr(nil, call, actualExprIndex)
-		}
-
-	// Note the check for `actualExprIndex` in the following cases, we need to make sure the slice expr
-	// is at the correct position since these are inequality checks.
-	case "Greater", "Greaterf": // len(s) > [non_negative_int]
-		if actualExprIndex == 0 && (expectedVal == _zero || expectedVal == _greaterThanZero) {
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		}
-	case "GreaterOrEqual", "GreaterOrEqualf": // len(s) >= [positive_int]
-		if actualExprIndex == 0 && expectedVal == _greaterThanZero {
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		}
-	case "Less", "Lessf": // [non_negative_int] < len(s)
-		if actualExprIndex == 1 && (expectedVal == _zero || expectedVal == _greaterThanZero) {
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		}
-	case "LessOrEqual", "LessOrEqualf": // [positive_int] <= len(s)
-		if actualExprIndex == 1 && expectedVal == _greaterThanZero {
-			return newNilBinaryExpr(actualExpr, token.NEQ)
-		}
-	}
-
-	return nil
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
+
+// Now, based on the semantics of the function, we can create artificial nonnil checks for
+// the following cases.
+// - slice length comparison. E.g., `Equal(1, len(s))`, implying len(s) > 0, meaning s is nonnil.
+//   Here, actualExpr is `s` and expectedExprValue is `_greaterThanZero`, which translates to the binary expression
+//   `s != nil` being added to the CFG. Similarly, for `Equal(len(s), 0)`, we add `s == nil` to the CFG.
+// - nil comparison. E.g., `Equal(nil, err)`, where actualExpr is `err` and expectedExprValue is `_nil`, which
+//   translates to the binary expression `err == nil` being added to the CFG.
+
+// len(s) == [positive_int], expr == nil
+
+// len(s) != [zero], expr != nil
+
+// Note the check for `actualExprIndex` in the following cases, we need to make sure the slice expr
+// is at the correct position since these are inequality checks.
+// len(s) > [non_negative_int]
+
+// len(s) >= [positive_int]
+
+// [non_negative_int] < len(s)
+
+// [positive_int] <= len(s)
 
 // requireLen handles `require.Len` calls for slices: asserting the length of a slice > 0 implies
 // the slice is not nil.

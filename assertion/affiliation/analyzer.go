@@ -40,14 +40,6 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(p *analysis.Pass) ([]annotation.FullTrigger, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-
-	if !conf.IsPkgInScope(pass.Pkg) {
-		return nil, nil
-	}
-
-	a := &Affiliation{conf: conf}
-	a.extractAffiliations(pass)
-	return a.triggers, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

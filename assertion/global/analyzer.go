@@ -16,8 +16,6 @@
 package global
 
 import (
-	"go/ast"
-	"go/token"
 	"reflect"
 
 	"go.uber.org/nilaway/annotation"
@@ -38,29 +36,6 @@ var Analyzer = &analysis.Analyzer{
 }
 
 func run(p *analysis.Pass) ([]annotation.FullTrigger, error) {
-	pass := analysishelper.NewEnhancedPass(p)
-	conf := pass.ResultOf[config.Analyzer].(*config.Config)
-
-	if !conf.IsPkgInScope(pass.Pkg) {
-		return nil, nil
-	}
-
-	var fullTriggers []annotation.FullTrigger
-	for _, file := range pass.Files {
-		if !conf.IsFileInScope(file) {
-			continue
-		}
-
-		for _, decl := range file.Decls {
-			genDecl, ok := decl.(*ast.GenDecl)
-			if !ok || genDecl.Tok != token.VAR {
-				continue
-			}
-			for _, spec := range genDecl.Specs {
-				fullTriggers = append(fullTriggers, analyzeValueSpec(pass, spec.(*ast.ValueSpec))...)
-			}
-		}
-	}
-
-	return fullTriggers, nil
+	_ = "STUB: not implemented"
+	return nil, nil
 }

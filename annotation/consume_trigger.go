@@ -15,15 +15,12 @@
 package annotation
 
 import (
-	"fmt"
 	"go/ast"
 	"go/token"
 	"go/types"
-	"strings"
 
 	"go.uber.org/nilaway/guard"
 	"go.uber.org/nilaway/util/orderedmap"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 // A ConsumingAnnotationTrigger indicated a possible reason that a nil flow to this site would indicate
@@ -84,9 +81,7 @@ type Assignment struct {
 	Position   token.Position
 }
 
-func (a *Assignment) String() string {
-	return fmt.Sprintf("`%s` to `%s` at %s", a.RHSExprStr, a.LHSExprStr, a.Position)
-}
+func (a *Assignment) String() string { _ = "STUB: not implemented"; return "" }
 
 // assignmentFlow is a struct that represents a flow of assignments.
 // Note that we implement a copy method for this struct, since we want to deep copy the assignments map when we copy
@@ -115,42 +110,19 @@ type assignmentFlow struct {
 	assignments *orderedmap.OrderedMap[Assignment, bool]
 }
 
-func (a *assignmentFlow) addEntry(entry Assignment) {
-	if a.assignments == nil {
-		a.assignments = orderedmap.New[Assignment, bool]()
-	}
-	a.assignments.Store(entry, true)
-}
+func (a *assignmentFlow) addEntry(entry Assignment) { _ = "STUB: not implemented"; return }
 
 func (a *assignmentFlow) copy() assignmentFlow {
-	if a.assignments == nil {
-		return assignmentFlow{}
-	}
-	assignments := orderedmap.New[Assignment, bool]()
-	for _, p := range a.assignments.Pairs {
-		assignments.Store(p.Key, true)
-	}
-	return assignmentFlow{assignments: assignments}
+	_ = "STUB: not implemented"
+	return *new(assignmentFlow)
 }
 
-func (a *assignmentFlow) String() string {
-	if a.assignments == nil || len(a.assignments.Pairs) == 0 {
-		return ""
-	}
+func (a *assignmentFlow) String() string { _ = "STUB: not implemented"; return "" }
 
-	// backprop algorithm populates assignment entries in backward order. Reverse entries to get forward order of
-	// assignments, and store in `strs` slice.
-	strs := make([]string, 0, len(a.assignments.Pairs))
-	for i := len(a.assignments.Pairs) - 1; i >= 0; i-- {
-		strs = append(strs, a.assignments.Pairs[i].Key.String())
-	}
+// backprop algorithm populates assignment entries in backward order. Reverse entries to get forward order of
+// assignments, and store in `strs` slice.
 
-	// build the informative print string tracking the assignments
-	var sb strings.Builder
-	sb.WriteString(" via the assignment(s):\n\t\t- ")
-	sb.WriteString(strings.Join(strs, ",\n\t\t- "))
-	return sb.String()
-}
+// build the informative print string tracking the assignments
 
 // TriggerIfNonNil is triggered if the contained Annotation is non-nil
 type TriggerIfNonNil struct {
@@ -160,68 +132,65 @@ type TriggerIfNonNil struct {
 }
 
 // Kind returns Conditional.
-func (*TriggerIfNonNil) Kind() TriggerKind { return Conditional }
+func (*TriggerIfNonNil) Kind() TriggerKind {
+	_ = "STUB: not implemented"
 
-// UnderlyingSite the underlying site this trigger's nilability depends on.
-func (t *TriggerIfNonNil) UnderlyingSite() Key { return t.Ann }
-
-// CheckConsume returns true if the underlying annotation is present in the passed map and nonnil
-func (t *TriggerIfNonNil) CheckConsume(annMap Map) bool {
-	ann, ok := t.Ann.Lookup(annMap)
-	return ok && !ann.IsNilable
+	// UnderlyingSite the underlying site this trigger's nilability depends on.
+	return *new(TriggerKind)
 }
+
+func (t *TriggerIfNonNil) UnderlyingSite() Key {
+	_ = "STUB: not implemented"
+
+	// CheckConsume returns true if the underlying annotation is present in the passed map and nonnil
+	return *new(Key)
+}
+
+func (t *TriggerIfNonNil) CheckConsume(annMap Map) bool { _ = "STUB: not implemented"; return false }
 
 // customPos has the below default implementation for TriggerIfNonNil, in which case ConsumeTrigger.Pos() will return a default value.
 // To return non-default position values, this method should be overridden appropriately.
-func (*TriggerIfNonNil) customPos() (token.Pos, bool) { return token.NoPos, false }
+func (*TriggerIfNonNil) customPos() (token.Pos, bool) {
+	_ = "STUB: not implemented"
+	return *
 
-// NeedsGuard is the default implementation for TriggerIfNonNil. To return non-default value, this method should be overridden.
-func (t *TriggerIfNonNil) NeedsGuard() bool { return !t.IsGuardNotNeeded }
+	// NeedsGuard is the default implementation for TriggerIfNonNil. To return non-default value, this method should be overridden.
+	new(token.Pos), false
+}
+
+func (t *TriggerIfNonNil) NeedsGuard() bool { _ = "STUB: not implemented"; return false }
 
 // SetNeedsGuard sets the underlying Guard-Neediness of this ConsumerTrigger
-func (t *TriggerIfNonNil) SetNeedsGuard(b bool) {
-	t.IsGuardNotNeeded = !b
-}
+func (t *TriggerIfNonNil) SetNeedsGuard(b bool) { _ = "STUB: not implemented"; return }
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (t *TriggerIfNonNil) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*TriggerIfNonNil); ok {
-		return t.Ann.equals(other.Ann) && t.IsGuardNotNeeded == other.IsGuardNotNeeded
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (t *TriggerIfNonNil) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *t
-	copyConsumer.Ann = t.Ann.copy()
-	copyConsumer.assignmentFlow = t.copy()
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // AddAssignment adds an assignment to the trigger.
 func (t *TriggerIfNonNil) AddAssignment(e Assignment) {
-	t.addEntry(e)
+	_ = "STUB: not implemented"
+
+	// Prestring returns this Prestring as a Prestring
+	return
 }
 
-// Prestring returns this Prestring as a Prestring
-func (t *TriggerIfNonNil) Prestring() Prestring {
-	return TriggerIfNonNilPrestring{
-		AssignmentStr: t.String(),
-	}
-}
+func (t *TriggerIfNonNil) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // TriggerIfNonNilPrestring is a Prestring storing the needed information to compactly encode a TriggerIfNonNil
 type TriggerIfNonNilPrestring struct {
 	AssignmentStr string
 }
 
-func (t TriggerIfNonNilPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("nonnil value")
-	sb.WriteString(t.AssignmentStr)
-	return sb.String()
-}
+func (t TriggerIfNonNilPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // TriggerIfDeepNonNil is triggered if the contained Annotation is deeply non-nil
 type TriggerIfDeepNonNil struct {
@@ -231,55 +200,64 @@ type TriggerIfDeepNonNil struct {
 }
 
 // Kind returns DeepConditional.
-func (*TriggerIfDeepNonNil) Kind() TriggerKind { return DeepConditional }
+func (*TriggerIfDeepNonNil) Kind() TriggerKind {
+	_ = "STUB: not implemented"
+	return *
 
-// UnderlyingSite the underlying site this trigger's nilability depends on.
-func (t *TriggerIfDeepNonNil) UnderlyingSite() Key { return t.Ann }
+	// UnderlyingSite the underlying site this trigger's nilability depends on.
+	new(TriggerKind)
+}
 
-// CheckConsume returns true if the underlying annotation is present in the passed map and deeply nonnil
+func (t *TriggerIfDeepNonNil) UnderlyingSite() Key {
+	_ = "STUB: not implemented"
+
+	// CheckConsume returns true if the underlying annotation is present in the passed map and deeply nonnil
+	return *new(Key)
+}
+
 func (t *TriggerIfDeepNonNil) CheckConsume(annMap Map) bool {
-	ann, ok := t.Ann.Lookup(annMap)
-	return ok && !ann.IsDeepNilable
+	_ = "STUB: not implemented"
+	return false
 }
 
 // customPos has the below default implementation for TriggerIfDeepNonNil, in which case ConsumeTrigger.Pos() will return a default value.
 // To return non-default position values, this method should be overridden appropriately.
-func (*TriggerIfDeepNonNil) customPos() (token.Pos, bool) { return token.NoPos, false }
+func (*TriggerIfDeepNonNil) customPos() (token.Pos, bool) {
+	_ = "STUB: not implemented"
+	return *
 
-// NeedsGuard default implementation for TriggerIfDeepNonNil. To return non-default value, this method should be overridden.
-func (t *TriggerIfDeepNonNil) NeedsGuard() bool { return !t.IsGuardNotNeeded }
+	// NeedsGuard default implementation for TriggerIfDeepNonNil. To return non-default value, this method should be overridden.
+	new(token.Pos), false
+}
+
+func (t *TriggerIfDeepNonNil) NeedsGuard() bool { _ = "STUB: not implemented"; return false }
 
 // SetNeedsGuard sets the underlying Guard-Neediness of this ConsumerTrigger
-func (t *TriggerIfDeepNonNil) SetNeedsGuard(b bool) {
-	t.IsGuardNotNeeded = !b
-}
+func (t *TriggerIfDeepNonNil) SetNeedsGuard(b bool) { _ = "STUB: not implemented"; return }
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (t *TriggerIfDeepNonNil) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*TriggerIfDeepNonNil); ok {
-		return t.Ann.equals(other.Ann) && t.IsGuardNotNeeded == other.IsGuardNotNeeded
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (t *TriggerIfDeepNonNil) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *t
-	copyConsumer.Ann = t.Ann.copy()
-	copyConsumer.assignmentFlow = t.copy()
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // AddAssignment adds an assignment to the trigger.
 func (t *TriggerIfDeepNonNil) AddAssignment(e Assignment) {
-	t.addEntry(e)
+	_ = "STUB: not implemented"
+
+	// Prestring returns this Prestring as a Prestring
+	return
 }
 
-// Prestring returns this Prestring as a Prestring
 func (t *TriggerIfDeepNonNil) Prestring() Prestring {
-	return TriggerIfDeepNonNilPrestring{
-		AssignmentStr: t.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // TriggerIfDeepNonNilPrestring is a Prestring storing the needed information to compactly encode a TriggerIfDeepNonNil
@@ -287,12 +265,7 @@ type TriggerIfDeepNonNilPrestring struct {
 	AssignmentStr string
 }
 
-func (t TriggerIfDeepNonNilPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("deeply nonnil value")
-	sb.WriteString(t.AssignmentStr)
-	return sb.String()
-}
+func (t TriggerIfDeepNonNilPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ConsumeTriggerTautology is used at consumption sites were consuming nil is always an error
 type ConsumeTriggerTautology struct {
@@ -301,51 +274,64 @@ type ConsumeTriggerTautology struct {
 }
 
 // Kind returns Always.
-func (*ConsumeTriggerTautology) Kind() TriggerKind { return Always }
+func (*ConsumeTriggerTautology) Kind() TriggerKind {
+	_ = "STUB: not implemented"
 
-// UnderlyingSite always returns nil.
-func (*ConsumeTriggerTautology) UnderlyingSite() Key { return nil }
+	// UnderlyingSite always returns nil.
+	return *new(TriggerKind)
+}
 
-// CheckConsume returns true
-func (*ConsumeTriggerTautology) CheckConsume(Map) bool { return true }
+func (*ConsumeTriggerTautology) UnderlyingSite() Key {
+	_ = "STUB: not implemented"
 
-// customPos has the below default implementation for ConsumeTriggerTautology, in which case ConsumeTrigger.Pos() will return a default value.
-// To return non-default position values, this method should be overridden appropriately.
-func (*ConsumeTriggerTautology) customPos() (token.Pos, bool) { return token.NoPos, false }
+	// CheckConsume returns true
+	return *new(Key)
+}
 
-// NeedsGuard default implementation for ConsumeTriggerTautology. To return non-default value, this method should be overridden.
-func (c *ConsumeTriggerTautology) NeedsGuard() bool { return !c.IsGuardNotNeeded }
+func (*ConsumeTriggerTautology) CheckConsume(Map) bool {
+	_ = "STUB: not implemented"
+
+	// customPos has the below default implementation for ConsumeTriggerTautology, in which case ConsumeTrigger.Pos() will return a default value.
+	// To return non-default position values, this method should be overridden appropriately.
+	return false
+}
+
+func (*ConsumeTriggerTautology) customPos() (token.Pos, bool) {
+	_ = "STUB: not implemented"
+	return *
+
+	// NeedsGuard default implementation for ConsumeTriggerTautology. To return non-default value, this method should be overridden.
+	new(token.Pos), false
+}
+
+func (c *ConsumeTriggerTautology) NeedsGuard() bool { _ = "STUB: not implemented"; return false }
 
 // SetNeedsGuard sets the underlying Guard-Neediness of this ConsumerTrigger
-func (c *ConsumeTriggerTautology) SetNeedsGuard(b bool) {
-	c.IsGuardNotNeeded = !b
-}
+func (c *ConsumeTriggerTautology) SetNeedsGuard(b bool) { _ = "STUB: not implemented"; return }
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (c *ConsumeTriggerTautology) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ConsumeTriggerTautology); ok {
-		return c.IsGuardNotNeeded == other.IsGuardNotNeeded
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (c *ConsumeTriggerTautology) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *c
-	copyConsumer.assignmentFlow = c.copy()
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // AddAssignment adds an assignment to the trigger.
 func (c *ConsumeTriggerTautology) AddAssignment(e Assignment) {
-	c.addEntry(e)
+	_ = "STUB: not implemented"
+
+	// Prestring returns this Prestring as a Prestring
+	return
 }
 
-// Prestring returns this Prestring as a Prestring
 func (c *ConsumeTriggerTautology) Prestring() Prestring {
-	return ConsumeTriggerTautologyPrestring{
-		AssignmentStr: c.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // ConsumeTriggerTautologyPrestring is a Prestring storing the needed information to compactly encode a ConsumeTriggerTautology
@@ -353,12 +339,7 @@ type ConsumeTriggerTautologyPrestring struct {
 	AssignmentStr string
 }
 
-func (c ConsumeTriggerTautologyPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("must be nonnil")
-	sb.WriteString(c.AssignmentStr)
-	return sb.String()
-}
+func (c ConsumeTriggerTautologyPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // PtrLoad is when a value flows to a point where it is loaded as a pointer
 type PtrLoad struct {
@@ -367,37 +348,25 @@ type PtrLoad struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (p *PtrLoad) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*PtrLoad); ok {
-		return p.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (p *PtrLoad) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *p
-	copyConsumer.ConsumeTriggerTautology = p.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this PtrLoad as a Prestring
-func (p *PtrLoad) Prestring() Prestring {
-	return PtrLoadPrestring{
-		AssignmentStr: p.String(),
-	}
-}
+func (p *PtrLoad) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // PtrLoadPrestring is a Prestring storing the needed information to compactly encode a PtrLoad
 type PtrLoadPrestring struct {
 	AssignmentStr string
 }
 
-func (p PtrLoadPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("dereferenced")
-	sb.WriteString(p.AssignmentStr)
-	return sb.String()
-}
+func (p PtrLoadPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // MapAccess is when a map value flows to a point where it is indexed, and thus must be non-nil
 //
@@ -408,37 +377,25 @@ type MapAccess struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (i *MapAccess) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*MapAccess); ok {
-		return i.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (i *MapAccess) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *i
-	copyConsumer.ConsumeTriggerTautology = i.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this MapAccess as a Prestring
-func (i *MapAccess) Prestring() Prestring {
-	return MapAccessPrestring{
-		AssignmentStr: i.String(),
-	}
-}
+func (i *MapAccess) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // MapAccessPrestring is a Prestring storing the needed information to compactly encode a MapAccess
 type MapAccessPrestring struct {
 	AssignmentStr string
 }
 
-func (i MapAccessPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("keyed into")
-	sb.WriteString(i.AssignmentStr)
-	return sb.String()
-}
+func (i MapAccessPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // MapWrittenTo is when a map value flows to a point where one of its indices is written to, and thus
 // must be non-nil
@@ -448,37 +405,25 @@ type MapWrittenTo struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (m *MapWrittenTo) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*MapWrittenTo); ok {
-		return m.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (m *MapWrittenTo) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *m
-	copyConsumer.ConsumeTriggerTautology = m.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this MapWrittenTo as a Prestring
-func (m *MapWrittenTo) Prestring() Prestring {
-	return MapWrittenToPrestring{
-		AssignmentStr: m.String(),
-	}
-}
+func (m *MapWrittenTo) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // MapWrittenToPrestring is a Prestring storing the needed information to compactly encode a MapWrittenTo
 type MapWrittenToPrestring struct {
 	AssignmentStr string
 }
 
-func (m MapWrittenToPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("written to at an index")
-	sb.WriteString(m.AssignmentStr)
-	return sb.String()
-}
+func (m MapWrittenToPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // SliceAccess is when a slice value flows to a point where it is sliced, and thus must be non-nil
 type SliceAccess struct {
@@ -487,37 +432,25 @@ type SliceAccess struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (s *SliceAccess) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*SliceAccess); ok {
-		return s.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (s *SliceAccess) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *s
-	copyConsumer.ConsumeTriggerTautology = s.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this SliceAccess as a Prestring
-func (s *SliceAccess) Prestring() Prestring {
-	return SliceAccessPrestring{
-		AssignmentStr: s.String(),
-	}
-}
+func (s *SliceAccess) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // SliceAccessPrestring is a Prestring storing the needed information to compactly encode a SliceAccess
 type SliceAccessPrestring struct {
 	AssignmentStr string
 }
 
-func (s SliceAccessPrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("sliced into")
-	sb.WriteString(s.AssignmentStr)
-	return sb.String()
-}
+func (s SliceAccessPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // FldAccess is when a value flows to a point where a field of it is accessed, and so it must be non-nil
 type FldAccess struct {
@@ -528,37 +461,18 @@ type FldAccess struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *FldAccess) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*FldAccess); ok {
-		return f.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology) && f.Sel == other.Sel
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *FldAccess) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.ConsumeTriggerTautology = f.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this FldAccess as a Prestring
-func (f *FldAccess) Prestring() Prestring {
-	fieldName, methodName := "", ""
-	switch t := f.Sel.(type) {
-	case *types.Var:
-		fieldName = t.Name()
-	case *types.Func:
-		methodName = t.Name()
-	default:
-		panic(fmt.Sprintf("unexpected Sel type %T in FldAccess", t))
-	}
-
-	return FldAccessPrestring{
-		FieldName:     fieldName,
-		MethodName:    methodName,
-		AssignmentStr: f.String(),
-	}
-}
+func (f *FldAccess) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // FldAccessPrestring is a Prestring storing the needed information to compactly encode a FldAccess
 type FldAccessPrestring struct {
@@ -567,16 +481,7 @@ type FldAccessPrestring struct {
 	AssignmentStr string
 }
 
-func (f FldAccessPrestring) String() string {
-	var sb strings.Builder
-	if f.MethodName != "" {
-		fmt.Fprintf(&sb, "called `%s()`", f.MethodName)
-	} else {
-		fmt.Fprintf(&sb, "accessed field `%s`", f.FieldName)
-	}
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f FldAccessPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // UseAsErrorResult is when a value flows to the error result of a function, where it is expected to be non-nil
 type UseAsErrorResult struct {
@@ -588,32 +493,18 @@ type UseAsErrorResult struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsErrorResult) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsErrorResult); ok {
-		return u.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			u.RetStmt == other.RetStmt &&
-			u.IsNamedReturn == other.IsNamedReturn
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsErrorResult) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfNonNil = u.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsErrorResult as a Prestring
-func (u *UseAsErrorResult) Prestring() Prestring {
-	retAnn := u.Ann.(*RetAnnotationKey)
-	return UseAsErrorResultPrestring{
-		Pos:              retAnn.RetNum,
-		ReturningFuncStr: retAnn.FuncDecl.Name(),
-		IsNamedReturn:    u.IsNamedReturn,
-		RetName:          retAnn.FuncDecl.Type().(*types.Signature).Results().At(retAnn.RetNum).Name(),
-		AssignmentStr:    u.String(),
-	}
-}
+func (u *UseAsErrorResult) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // UseAsErrorResultPrestring is a Prestring storing the needed information to compactly encode a UseAsErrorResult
 type UseAsErrorResultPrestring struct {
@@ -624,23 +515,12 @@ type UseAsErrorResultPrestring struct {
 	AssignmentStr    string
 }
 
-func (u UseAsErrorResultPrestring) String() string {
-	var sb strings.Builder
-	if u.IsNamedReturn {
-		fmt.Fprintf(&sb, "returned as named error result `%s` of `%s()`", u.RetName, u.ReturningFuncStr)
-	} else {
-		fmt.Fprintf(&sb, "returned as error result %d of `%s()`", u.Pos, u.ReturningFuncStr)
-	}
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
-}
+func (u UseAsErrorResultPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // overriding position value to point to the raw return statement, which is the source of the potential error
 func (u *UseAsErrorResult) customPos() (token.Pos, bool) {
-	if u.IsNamedReturn {
-		return u.RetStmt.Pos(), true
-	}
-	return 0, false
+	_ = "STUB: not implemented"
+	return *new(token.Pos), false
 }
 
 // FldAssign is when a value flows to a point where it is assigned into a field
@@ -650,27 +530,18 @@ type FldAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *FldAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*FldAssign); ok {
-		return f.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *FldAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfNonNil = f.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this FldAssign as a Prestring
-func (f *FldAssign) Prestring() Prestring {
-	fldAnn := f.Ann.(*FieldAnnotationKey)
-	return FldAssignPrestring{
-		FieldName:     fldAnn.FieldDecl.Name(),
-		AssignmentStr: f.String(),
-	}
-}
+func (f *FldAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // FldAssignPrestring is a Prestring storing the needed information to compactly encode a FldAssign
 type FldAssignPrestring struct {
@@ -678,12 +549,7 @@ type FldAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (f FldAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into field `%s`", f.FieldName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f FldAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ArgFldPass is when a struct field value (A.f) flows to a point where it is passed to a function with a param of
 // the same struct type (A)
@@ -694,36 +560,18 @@ type ArgFldPass struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *ArgFldPass) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ArgFldPass); ok {
-		return f.TriggerIfNonNil.equals(other.TriggerIfNonNil) && f.IsPassed == other.IsPassed
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *ArgFldPass) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfNonNil = f.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ArgFldPass as a Prestring
-func (f *ArgFldPass) Prestring() Prestring {
-	ann := f.Ann.(*ParamFieldAnnotationKey)
-	recvName := ""
-	if ann.IsReceiver() {
-		recvName = ann.FuncDecl.Type().(*types.Signature).Recv().Name()
-	}
-
-	return ArgFldPassPrestring{
-		FieldName:     ann.FieldDecl.Name(),
-		FuncName:      ann.FuncDecl.Name(),
-		ParamNum:      ann.ParamNum,
-		RecvName:      recvName,
-		IsPassed:      f.IsPassed,
-		AssignmentStr: f.String(),
-	}
-}
+func (f *ArgFldPass) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ArgFldPassPrestring is a Prestring storing the needed information to compactly encode a ArgFldPass
 type ArgFldPassPrestring struct {
@@ -735,22 +583,7 @@ type ArgFldPassPrestring struct {
 	AssignmentStr string
 }
 
-func (f ArgFldPassPrestring) String() string {
-	var sb strings.Builder
-	prefix := ""
-	if f.IsPassed {
-		prefix = "assigned to "
-	}
-
-	if len(f.RecvName) > 0 {
-		fmt.Fprintf(&sb, "%sfield `%s` of method receiver `%s`", prefix, f.FieldName, f.RecvName)
-	} else {
-		fmt.Fprintf(&sb, "%sfield `%s` of argument %d to `%s()`", prefix, f.FieldName, f.ParamNum, f.FuncName)
-	}
-
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f ArgFldPassPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // GlobalVarAssign is when a value flows to a point where it is assigned into a global variable
 type GlobalVarAssign struct {
@@ -759,27 +592,18 @@ type GlobalVarAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (g *GlobalVarAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*GlobalVarAssign); ok {
-		return g.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (g *GlobalVarAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *g
-	copyConsumer.TriggerIfNonNil = g.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this GlobalVarAssign as a Prestring
-func (g *GlobalVarAssign) Prestring() Prestring {
-	varAnn := g.Ann.(*GlobalVarAnnotationKey)
-	return GlobalVarAssignPrestring{
-		VarName:       varAnn.VarDecl.Name(),
-		AssignmentStr: g.String(),
-	}
-}
+func (g *GlobalVarAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // GlobalVarAssignPrestring is a Prestring storing the needed information to compactly encode a GlobalVarAssign
 type GlobalVarAssignPrestring struct {
@@ -787,12 +611,7 @@ type GlobalVarAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (g GlobalVarAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into global variable `%s`", g.VarName)
-	sb.WriteString(g.AssignmentStr)
-	return sb.String()
-}
+func (g GlobalVarAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ArgPass is when a value flows to a point where it is passed as an argument to a function. This
 // consumer trigger can be used on top of two different sites: ParamAnnotationKey &
@@ -806,41 +625,18 @@ type ArgPass struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (a *ArgPass) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ArgPass); ok {
-		return a.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (a *ArgPass) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *a
-	copyConsumer.TriggerIfNonNil = a.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ArgPass as a Prestring
-func (a *ArgPass) Prestring() Prestring {
-	switch key := a.Ann.(type) {
-	case *ParamAnnotationKey:
-		return ArgPassPrestring{
-			ParamName:     key.MinimalString(),
-			FuncName:      key.FuncDecl.Name(),
-			Location:      "",
-			AssignmentStr: a.String(),
-		}
-	case *CallSiteParamAnnotationKey:
-		return ArgPassPrestring{
-			ParamName:     key.MinimalString(),
-			FuncName:      key.FuncDecl.Name(),
-			Location:      key.Location.String(),
-			AssignmentStr: a.String(),
-		}
-	default:
-		panic(fmt.Sprintf(
-			"Expected ParamAnnotationKey or CallSiteParamAnnotationKey but got: %T", key))
-	}
-}
+func (a *ArgPass) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ArgPassPrestring is a Prestring storing the needed information to compactly encode a ArgPass
 type ArgPassPrestring struct {
@@ -852,15 +648,7 @@ type ArgPassPrestring struct {
 	AssignmentStr string
 }
 
-func (a ArgPassPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "passed as %s to `%s()`", a.ParamName, a.FuncName)
-	if a.Location != "" {
-		fmt.Fprintf(&sb, " at %s", a.Location)
-	}
-	sb.WriteString(a.AssignmentStr)
-	return sb.String()
-}
+func (a ArgPassPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ArgPassDeep is when a value deeply flows to a point where it is passed as an argument to a function
 type ArgPassDeep struct {
@@ -869,41 +657,18 @@ type ArgPassDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (a *ArgPassDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ArgPassDeep); ok {
-		return a.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (a *ArgPassDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *a
-	copyConsumer.TriggerIfDeepNonNil = a.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ArgPassDeep as a Prestring
-func (a *ArgPassDeep) Prestring() Prestring {
-	switch key := a.Ann.(type) {
-	case *ParamAnnotationKey:
-		return ArgPassPrestring{
-			ParamName:     key.MinimalString(),
-			FuncName:      key.FuncDecl.Name(),
-			Location:      "",
-			AssignmentStr: a.String(),
-		}
-	case *CallSiteParamAnnotationKey:
-		return ArgPassPrestring{
-			ParamName:     key.MinimalString(),
-			FuncName:      key.FuncDecl.Name(),
-			Location:      key.Location.String(),
-			AssignmentStr: a.String(),
-		}
-	default:
-		panic(fmt.Sprintf(
-			"Expected ParamAnnotationKey or CallSiteParamAnnotationKey but got: %T", key))
-	}
-}
+func (a *ArgPassDeep) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ArgPassDeepPrestring is a Prestring storing the needed information to compactly encode a ArgPassDeep
 type ArgPassDeepPrestring struct {
@@ -915,15 +680,7 @@ type ArgPassDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (a ArgPassDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "passed deeply as %s to `%s()`", a.ParamName, a.FuncName)
-	if a.Location != "" {
-		fmt.Fprintf(&sb, " at %s", a.Location)
-	}
-	sb.WriteString(a.AssignmentStr)
-	return sb.String()
-}
+func (a ArgPassDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // RecvPass is when a receiver value flows to a point where it is used to invoke a method.
 // E.g., `s.foo()`, here `s` is a receiver and forms the RecvPass Consumer
@@ -933,27 +690,18 @@ type RecvPass struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (a *RecvPass) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*RecvPass); ok {
-		return a.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (a *RecvPass) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *a
-	copyConsumer.TriggerIfNonNil = a.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this RecvPass as a Prestring
-func (a *RecvPass) Prestring() Prestring {
-	recvAnn := a.Ann.(*RecvAnnotationKey)
-	return RecvPassPrestring{
-		FuncName:      recvAnn.FuncDecl.Name(),
-		AssignmentStr: a.String(),
-	}
-}
+func (a *RecvPass) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // RecvPassPrestring is a Prestring storing the needed information to compactly encode a RecvPass
 type RecvPassPrestring struct {
@@ -961,12 +709,7 @@ type RecvPassPrestring struct {
 	AssignmentStr string
 }
 
-func (a RecvPassPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "used as receiver to call `%s()`", a.FuncName)
-	sb.WriteString(a.AssignmentStr)
-	return sb.String()
-}
+func (a RecvPassPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // InterfaceResultFromImplementation is when a result is determined to flow from a concrete method to an interface method via implementation
 type InterfaceResultFromImplementation struct {
@@ -976,30 +719,20 @@ type InterfaceResultFromImplementation struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (i *InterfaceResultFromImplementation) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*InterfaceResultFromImplementation); ok {
-		return i.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			i.InterfaceMethod == other.InterfaceMethod &&
-			i.ImplementingMethod == other.ImplementingMethod
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (i *InterfaceResultFromImplementation) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *i
-	copyConsumer.TriggerIfNonNil = i.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this InterfaceResultFromImplementation as a Prestring
 func (i *InterfaceResultFromImplementation) Prestring() Prestring {
-	retAnn := i.Ann.(*RetAnnotationKey)
-	return InterfaceResultFromImplementationPrestring{
-		retAnn.RetNum,
-		typeshelper.PartiallyQualifiedFuncName(retAnn.FuncDecl),
-		typeshelper.PartiallyQualifiedFuncName(i.ImplementingMethod),
-		i.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // InterfaceResultFromImplementationPrestring is a Prestring storing the needed information to compactly encode a InterfaceResultFromImplementation
@@ -1011,11 +744,8 @@ type InterfaceResultFromImplementationPrestring struct {
 }
 
 func (i InterfaceResultFromImplementationPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "returned as result %d from interface method `%s()` (implemented by `%s()`)",
-		i.RetNum, i.IntName, i.ImplName)
-	sb.WriteString(i.AssignmentStr)
-	return sb.String()
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // MethodParamFromInterface is when a param flows from an interface method to a concrete method via implementation
@@ -1026,30 +756,20 @@ type MethodParamFromInterface struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (m *MethodParamFromInterface) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*MethodParamFromInterface); ok {
-		return m.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			m.InterfaceMethod == other.InterfaceMethod &&
-			m.ImplementingMethod == other.ImplementingMethod
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (m *MethodParamFromInterface) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *m
-	copyConsumer.TriggerIfNonNil = m.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this MethodParamFromInterface as a Prestring
 func (m *MethodParamFromInterface) Prestring() Prestring {
-	paramAnn := m.Ann.(*ParamAnnotationKey)
-	return MethodParamFromInterfacePrestring{
-		paramAnn.ParamNameString(),
-		typeshelper.PartiallyQualifiedFuncName(paramAnn.FuncDecl),
-		typeshelper.PartiallyQualifiedFuncName(m.InterfaceMethod),
-		m.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // MethodParamFromInterfacePrestring is a Prestring storing the needed information to compactly encode a MethodParamFromInterface
@@ -1060,31 +780,16 @@ type MethodParamFromInterfacePrestring struct {
 	AssignmentStr string
 }
 
-func (m MethodParamFromInterfacePrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "passed as parameter `%s` to `%s()` (implementing `%s()`)",
-		m.ParamName, m.ImplName, m.IntName)
-	sb.WriteString(m.AssignmentStr)
-	return sb.String()
-}
+func (m MethodParamFromInterfacePrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // DuplicateReturnConsumer duplicates a given consume trigger, assuming the given consumer trigger
 // is for a UseAsReturn annotation.
 func DuplicateReturnConsumer(t *ConsumeTrigger, location token.Position) *ConsumeTrigger {
-	ann := t.Annotation.(*UseAsReturn)
-	key := ann.Ann.(*RetAnnotationKey)
-	return &ConsumeTrigger{
-		Annotation: &UseAsReturn{
-			TriggerIfNonNil: &TriggerIfNonNil{
-				Ann: NewCallSiteRetKey(key.FuncDecl, key.RetNum, location)},
-			IsNamedReturn: ann.IsNamedReturn,
-			RetStmt:       ann.RetStmt,
-		},
-		Expr:         t.Expr,
-		Guards:       t.Guards.Copy(), // TODO: probably, we might not need a deep copy all the time
-		GuardMatched: t.GuardMatched,
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// TODO: probably, we might not need a deep copy all the time
 
 // UseAsReturn is when a value flows to a point where it is returned from a function.
 // This consumer trigger can be used on top of two different sites: RetAnnotationKey &
@@ -1100,47 +805,18 @@ type UseAsReturn struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsReturn) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsReturn); ok {
-		return u.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			u.IsNamedReturn == other.IsNamedReturn &&
-			u.IsTrackingAlwaysSafe == other.IsTrackingAlwaysSafe &&
-			u.RetStmt == other.RetStmt
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsReturn) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfNonNil = u.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsReturn as a Prestring
-func (u *UseAsReturn) Prestring() Prestring {
-	switch key := u.Ann.(type) {
-	case *RetAnnotationKey:
-		return UseAsReturnPrestring{
-			key.FuncDecl.Name(),
-			key.RetNum,
-			u.IsNamedReturn,
-			key.FuncDecl.Type().(*types.Signature).Results().At(key.RetNum).Name(),
-			"",
-			u.String(),
-		}
-	case *CallSiteRetAnnotationKey:
-		return UseAsReturnPrestring{
-			key.FuncDecl.Name(),
-			key.RetNum,
-			u.IsNamedReturn,
-			key.FuncDecl.Type().(*types.Signature).Results().At(key.RetNum).Name(),
-			key.Location.String(),
-			u.String(),
-		}
-	default:
-		panic(fmt.Sprintf("Expected RetAnnotationKey or CallSiteRetAnnotationKey but got: %T", key))
-	}
-}
+func (u *UseAsReturn) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // UseAsReturnPrestring is a Prestring storing the needed information to compactly encode a UseAsReturn
 type UseAsReturnPrestring struct {
@@ -1155,27 +831,12 @@ type UseAsReturnPrestring struct {
 	AssignmentStr string
 }
 
-func (u UseAsReturnPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "returned from `%s()`", u.FuncName)
-	if u.IsNamedReturn {
-		fmt.Fprintf(&sb, " via named return `%s`", u.RetName)
-	} else {
-		fmt.Fprintf(&sb, " in position %d", u.RetNum)
-	}
-	if u.Location != "" {
-		fmt.Fprintf(&sb, " at %s", u.Location)
-	}
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
-}
+func (u UseAsReturnPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // overriding position value to point to the raw return statement, which is the source of the potential error
 func (u *UseAsReturn) customPos() (token.Pos, bool) {
-	if u.IsNamedReturn {
-		return u.RetStmt.Pos(), true
-	}
-	return 0, false
+	_ = "STUB: not implemented"
+	return *new(token.Pos), false
 }
 
 // UseAsReturnDeep is when a deep value flows to a point where it is returned from a function.
@@ -1187,31 +848,18 @@ type UseAsReturnDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsReturnDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsReturnDeep); ok {
-		return u.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil) &&
-			u.IsNamedReturn == other.IsNamedReturn &&
-			u.RetStmt == other.RetStmt
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsReturnDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfDeepNonNil = u.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsReturn as a Prestring
-func (u *UseAsReturnDeep) Prestring() Prestring {
-	key := u.Ann.(*RetAnnotationKey)
-	return UseAsReturnDeepPrestring{
-		key.FuncDecl.Name(),
-		key.RetNum,
-		key.FuncDecl.Type().(*types.Signature).Results().At(key.RetNum).Name(),
-		u.String(),
-	}
-}
+func (u *UseAsReturnDeep) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // UseAsReturnDeepPrestring is a Prestring storing the needed information to compactly encode a UseAsReturnDeep
 type UseAsReturnDeepPrestring struct {
@@ -1221,23 +869,12 @@ type UseAsReturnDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (u UseAsReturnDeepPrestring) String() string {
-	var sb strings.Builder
-	via := ""
-	if u.RetName != "" && u.RetName != "_" {
-		via = fmt.Sprintf(" via named return `%s`", u.RetName)
-	}
-	fmt.Fprintf(&sb, "returned deeply from `%s()`%s in position %d", u.FuncName, via, u.RetNum)
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
-}
+func (u UseAsReturnDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // overriding position value to point to the raw return statement, which is the source of the potential error
 func (u UseAsReturnDeep) customPos() (token.Pos, bool) {
-	if u.IsNamedReturn {
-		return u.RetStmt.Pos(), true
-	}
-	return 0, false
+	_ = "STUB: not implemented"
+	return *new(token.Pos), false
 }
 
 // UseAsFldOfReturn is when a struct field value (A.f) flows to a point where it is returned from a function with the
@@ -1248,29 +885,18 @@ type UseAsFldOfReturn struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsFldOfReturn) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsFldOfReturn); ok {
-		return u.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsFldOfReturn) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfNonNil = u.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsFldOfReturn as a Prestring
-func (u *UseAsFldOfReturn) Prestring() Prestring {
-	retAnn := u.Ann.(*RetFieldAnnotationKey)
-	return UseAsFldOfReturnPrestring{
-		retAnn.FuncDecl.Name(),
-		retAnn.FieldDecl.Name(),
-		retAnn.RetNum,
-		u.String(),
-	}
-}
+func (u *UseAsFldOfReturn) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // UseAsFldOfReturnPrestring is a Prestring storing the needed information to compactly encode a UseAsFldOfReturn
 type UseAsFldOfReturnPrestring struct {
@@ -1280,47 +906,24 @@ type UseAsFldOfReturnPrestring struct {
 	AssignmentStr string
 }
 
-func (u UseAsFldOfReturnPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "field `%s` returned by result %d of `%s()`", u.FieldName, u.RetNum, u.FuncName)
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
-}
+func (u UseAsFldOfReturnPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // GetRetFldConsumer returns the UseAsFldOfReturn consume trigger with given retKey and expr
 func GetRetFldConsumer(retKey Key, expr ast.Expr) *ConsumeTrigger {
-	return &ConsumeTrigger{
-		Annotation: &UseAsFldOfReturn{
-			TriggerIfNonNil: &TriggerIfNonNil{
-				Ann: retKey}},
-		Expr:   expr,
-		Guards: guard.NoGuards(),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetEscapeFldConsumer returns the FldEscape consume trigger with given escKey and selExpr
 func GetEscapeFldConsumer(escKey Key, selExpr ast.Expr) *ConsumeTrigger {
-	return &ConsumeTrigger{
-		Annotation: &FldEscape{
-			TriggerIfNonNil: &TriggerIfNonNil{
-				Ann: escKey,
-			}},
-		Expr:   selExpr,
-		Guards: guard.NoGuards(),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // GetParamFldConsumer returns the ArgFldPass consume trigger with given paramKey and expr
 func GetParamFldConsumer(paramKey Key, expr ast.Expr) *ConsumeTrigger {
-	return &ConsumeTrigger{
-		Annotation: &ArgFldPass{
-			TriggerIfNonNil: &TriggerIfNonNil{
-				Ann: paramKey},
-			IsPassed: true,
-		},
-		Expr:   expr,
-		Guards: guard.NoGuards(),
-	}
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // SliceAssign is when a value flows to a point where it is assigned into a slice
@@ -1330,27 +933,18 @@ type SliceAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *SliceAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*SliceAssign); ok {
-		return f.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *SliceAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfDeepNonNil = f.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this SliceAssign as a Prestring
-func (f *SliceAssign) Prestring() Prestring {
-	fldAnn := f.Ann.(*TypeNameAnnotationKey)
-	return SliceAssignPrestring{
-		fldAnn.TypeDecl.Name(),
-		f.String(),
-	}
-}
+func (f *SliceAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // SliceAssignPrestring is a Prestring storing the needed information to compactly encode a SliceAssign
 type SliceAssignPrestring struct {
@@ -1358,12 +952,7 @@ type SliceAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (f SliceAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into a slice of deeply nonnil type `%s`", f.TypeName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f SliceAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ArrayAssign is when a value flows to a point where it is assigned into an array
 type ArrayAssign struct {
@@ -1372,27 +961,18 @@ type ArrayAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (a *ArrayAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ArrayAssign); ok {
-		return a.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (a *ArrayAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *a
-	copyConsumer.TriggerIfDeepNonNil = a.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ArrayAssign as a Prestring
-func (a *ArrayAssign) Prestring() Prestring {
-	fldAnn := a.Ann.(*TypeNameAnnotationKey)
-	return ArrayAssignPrestring{
-		fldAnn.TypeDecl.Name(),
-		a.String(),
-	}
-}
+func (a *ArrayAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ArrayAssignPrestring is a Prestring storing the needed information to compactly encode a SliceAssign
 type ArrayAssignPrestring struct {
@@ -1400,12 +980,7 @@ type ArrayAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (a ArrayAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into an array of deeply nonnil type `%s`", a.TypeName)
-	sb.WriteString(a.AssignmentStr)
-	return sb.String()
-}
+func (a ArrayAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // PtrAssign is when a value flows to a point where it is assigned into a pointer
 type PtrAssign struct {
@@ -1414,27 +989,18 @@ type PtrAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *PtrAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*PtrAssign); ok {
-		return f.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *PtrAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfDeepNonNil = f.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this PtrAssign as a Prestring
-func (f *PtrAssign) Prestring() Prestring {
-	fldAnn := f.Ann.(*TypeNameAnnotationKey)
-	return PtrAssignPrestring{
-		fldAnn.TypeDecl.Name(),
-		f.String(),
-	}
-}
+func (f *PtrAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // PtrAssignPrestring is a Prestring storing the needed information to compactly encode a PtrAssign
 type PtrAssignPrestring struct {
@@ -1442,12 +1008,7 @@ type PtrAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (f PtrAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into a pointer of deeply nonnil type `%s`", f.TypeName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f PtrAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // MapAssign is when a value flows to a point where it is assigned into an annotated map
 type MapAssign struct {
@@ -1456,27 +1017,18 @@ type MapAssign struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *MapAssign) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*MapAssign); ok {
-		return f.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *MapAssign) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfDeepNonNil = f.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this MapAssign as a Prestring
-func (f *MapAssign) Prestring() Prestring {
-	fldAnn := f.Ann.(*TypeNameAnnotationKey)
-	return MapAssignPrestring{
-		fldAnn.TypeDecl.Name(),
-		f.String(),
-	}
-}
+func (f *MapAssign) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // MapAssignPrestring is a Prestring storing the needed information to compactly encode a MapAssign
 type MapAssignPrestring struct {
@@ -1484,12 +1036,7 @@ type MapAssignPrestring struct {
 	AssignmentStr string
 }
 
-func (f MapAssignPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned into a map of deeply nonnil type `%s`", f.TypeName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f MapAssignPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // DeepAssignPrimitive is when a value flows to a point where it is assigned
 // deeply into an unnannotated object
@@ -1499,24 +1046,20 @@ type DeepAssignPrimitive struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (d *DeepAssignPrimitive) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*DeepAssignPrimitive); ok {
-		return d.ConsumeTriggerTautology.equals(other.ConsumeTriggerTautology)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (d *DeepAssignPrimitive) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *d
-	copyConsumer.ConsumeTriggerTautology = d.ConsumeTriggerTautology.Copy().(*ConsumeTriggerTautology)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this Prestring as a Prestring
 func (d *DeepAssignPrimitive) Prestring() Prestring {
-	return DeepAssignPrimitivePrestring{
-		AssignmentStr: d.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // DeepAssignPrimitivePrestring is a Prestring storing the needed information to compactly encode a DeepAssignPrimitive
@@ -1524,12 +1067,7 @@ type DeepAssignPrimitivePrestring struct {
 	AssignmentStr string
 }
 
-func (d DeepAssignPrimitivePrestring) String() string {
-	var sb strings.Builder
-	sb.WriteString("assigned into a deep type expecting nonnil element type")
-	sb.WriteString(d.AssignmentStr)
-	return sb.String()
-}
+func (d DeepAssignPrimitivePrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ParamAssignDeep is when a value flows to a point where it is assigned deeply into a function parameter
 type ParamAssignDeep struct {
@@ -1538,26 +1076,18 @@ type ParamAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (p *ParamAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ParamAssignDeep); ok {
-		return p.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (p *ParamAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *p
-	copyConsumer.TriggerIfDeepNonNil = p.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ParamAssignDeep as a Prestring
-func (p *ParamAssignDeep) Prestring() Prestring {
-	return ParamAssignDeepPrestring{
-		p.Ann.(*ParamAnnotationKey).MinimalString(),
-		p.String(),
-	}
-}
+func (p *ParamAssignDeep) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ParamAssignDeepPrestring is a Prestring storing the needed information to compactly encode a ParamAssignDeep
 type ParamAssignDeepPrestring struct {
@@ -1565,12 +1095,7 @@ type ParamAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (p ParamAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into parameter %s", p.ParamName)
-	sb.WriteString(p.AssignmentStr)
-	return sb.String()
-}
+func (p ParamAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // FuncRetAssignDeep is when a value flows to a point where it is assigned deeply into a function return
 type FuncRetAssignDeep struct {
@@ -1579,27 +1104,20 @@ type FuncRetAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *FuncRetAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*FuncRetAssignDeep); ok {
-		return f.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *FuncRetAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfDeepNonNil = f.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this FuncRetAssignDeep as a Prestring
 func (f *FuncRetAssignDeep) Prestring() Prestring {
-	retAnn := f.Ann.(*RetAnnotationKey)
-	return FuncRetAssignDeepPrestring{
-		retAnn.FuncDecl.Name(),
-		retAnn.RetNum,
-		f.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // FuncRetAssignDeepPrestring is a Prestring storing the needed information to compactly encode a FuncRetAssignDeep
@@ -1609,12 +1127,7 @@ type FuncRetAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (f FuncRetAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into the result %d of `%s()`", f.RetNum, f.FuncName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f FuncRetAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // VariadicParamAssignDeep is when a value flows to a point where it is assigned deeply into a variadic
 // function parameter
@@ -1624,26 +1137,20 @@ type VariadicParamAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (v *VariadicParamAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*VariadicParamAssignDeep); ok {
-		return v.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (v *VariadicParamAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *v
-	copyConsumer.TriggerIfNonNil = v.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this VariadicParamAssignDeep as a Prestring
 func (v *VariadicParamAssignDeep) Prestring() Prestring {
-	paramAnn := v.Ann.(*ParamAnnotationKey)
-	return VariadicParamAssignDeepPrestring{
-		ParamName:     paramAnn.MinimalString(),
-		AssignmentStr: v.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // VariadicParamAssignDeepPrestring is a Prestring storing the needed information to compactly encode a VariadicParamAssignDeep
@@ -1652,12 +1159,7 @@ type VariadicParamAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (v VariadicParamAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into variadic parameter `%s`", v.ParamName)
-	sb.WriteString(v.AssignmentStr)
-	return sb.String()
-}
+func (v VariadicParamAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // FieldAssignDeep is when a value flows to a point where it is assigned deeply into a field
 type FieldAssignDeep struct {
@@ -1666,27 +1168,18 @@ type FieldAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *FieldAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*FieldAssignDeep); ok {
-		return f.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *FieldAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfDeepNonNil = f.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this FieldAssignDeep as a Prestring
-func (f *FieldAssignDeep) Prestring() Prestring {
-	fldAnn := f.Ann.(*FieldAnnotationKey)
-	return FieldAssignDeepPrestring{
-		fldAnn.FieldDecl.Name(),
-		f.String(),
-	}
-}
+func (f *FieldAssignDeep) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // FieldAssignDeepPrestring is a Prestring storing the needed information to compactly encode a FieldAssignDeep
 type FieldAssignDeepPrestring struct {
@@ -1694,12 +1187,7 @@ type FieldAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (f FieldAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into field `%s`", f.FldName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f FieldAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // GlobalVarAssignDeep is when a value flows to a point where it is assigned deeply into a global variable
 type GlobalVarAssignDeep struct {
@@ -1708,26 +1196,20 @@ type GlobalVarAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (g *GlobalVarAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*GlobalVarAssignDeep); ok {
-		return g.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (g *GlobalVarAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *g
-	copyConsumer.TriggerIfDeepNonNil = g.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this GlobalVarAssignDeep as a Prestring
 func (g *GlobalVarAssignDeep) Prestring() Prestring {
-	varAnn := g.Ann.(*GlobalVarAnnotationKey)
-	return GlobalVarAssignDeepPrestring{
-		varAnn.VarDecl.Name(),
-		g.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // GlobalVarAssignDeepPrestring is a Prestring storing the needed information to compactly encode a GlobalVarAssignDeep
@@ -1736,12 +1218,7 @@ type GlobalVarAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (g GlobalVarAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into global variable `%s`", g.VarName)
-	sb.WriteString(g.AssignmentStr)
-	return sb.String()
-}
+func (g GlobalVarAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // LocalVarAssignDeep is when a value flows to a point where it is assigned deeply into a local variable of deeply nonnil type
 type LocalVarAssignDeep struct {
@@ -1750,25 +1227,20 @@ type LocalVarAssignDeep struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (l *LocalVarAssignDeep) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*LocalVarAssignDeep); ok {
-		return l.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (l *LocalVarAssignDeep) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *l
-	copyConsumer.TriggerIfDeepNonNil = l.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this LocalVarAssignDeep as a Prestring
 func (l *LocalVarAssignDeep) Prestring() Prestring {
-	return LocalVarAssignDeepPrestring{
-		VarName:       l.Ann.(*LocalVarAnnotationKey).VarDecl.Name(),
-		AssignmentStr: l.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // LocalVarAssignDeepPrestring is a Prestring storing the needed information to compactly encode a LocalVarAssignDeep
@@ -1777,12 +1249,7 @@ type LocalVarAssignDeepPrestring struct {
 	AssignmentStr string
 }
 
-func (l LocalVarAssignDeepPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "assigned deeply into local variable `%s`", l.VarName)
-	sb.WriteString(l.AssignmentStr)
-	return sb.String()
-}
+func (l LocalVarAssignDeepPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // ChanSend is when a value flows to a point where it is sent to a channel
 type ChanSend struct {
@@ -1791,27 +1258,18 @@ type ChanSend struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (c *ChanSend) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*ChanSend); ok {
-		return c.TriggerIfDeepNonNil.equals(other.TriggerIfDeepNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (c *ChanSend) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *c
-	copyConsumer.TriggerIfDeepNonNil = c.TriggerIfDeepNonNil.Copy().(*TriggerIfDeepNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this ChanSend as a Prestring
-func (c *ChanSend) Prestring() Prestring {
-	typeAnn := c.Ann.(*TypeNameAnnotationKey)
-	return ChanSendPrestring{
-		typeAnn.TypeDecl.Name(),
-		c.String(),
-	}
-}
+func (c *ChanSend) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // ChanSendPrestring is a Prestring storing the needed information to compactly encode a ChanSend
 type ChanSendPrestring struct {
@@ -1819,12 +1277,7 @@ type ChanSendPrestring struct {
 	AssignmentStr string
 }
 
-func (c ChanSendPrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "sent to channel of deeply nonnil type `%s`", c.TypeName)
-	sb.WriteString(c.AssignmentStr)
-	return sb.String()
-}
+func (c ChanSendPrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // FldEscape is when a nilable value flows through a field of a struct that escapes.
 // The consumer is added for the fields at sites of escape.
@@ -1840,27 +1293,18 @@ type FldEscape struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (f *FldEscape) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*FldEscape); ok {
-		return f.TriggerIfNonNil.equals(other.TriggerIfNonNil)
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (f *FldEscape) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *f
-	copyConsumer.TriggerIfNonNil = f.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this FldEscape as a Prestring
-func (f *FldEscape) Prestring() Prestring {
-	ann := f.Ann.(*EscapeFieldAnnotationKey)
-	return FldEscapePrestring{
-		FieldName:     ann.FieldDecl.Name(),
-		AssignmentStr: f.String(),
-	}
-}
+func (f *FldEscape) Prestring() Prestring { _ = "STUB: not implemented"; return *new(Prestring) }
 
 // FldEscapePrestring is a Prestring storing the needed information to compactly encode a FldEscape
 type FldEscapePrestring struct {
@@ -1868,12 +1312,7 @@ type FldEscapePrestring struct {
 	AssignmentStr string
 }
 
-func (f FldEscapePrestring) String() string {
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "field `%s` escaped out of our analysis scope (presumed nilable)", f.FieldName)
-	sb.WriteString(f.AssignmentStr)
-	return sb.String()
-}
+func (f FldEscapePrestring) String() string { _ = "STUB: not implemented"; return "" }
 
 // UseAsNonErrorRetDependentOnErrorRetNilability is when a value flows to a point where it is returned from an error returning function
 type UseAsNonErrorRetDependentOnErrorRetNilability struct {
@@ -1885,32 +1324,20 @@ type UseAsNonErrorRetDependentOnErrorRetNilability struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsNonErrorRetDependentOnErrorRetNilability) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsNonErrorRetDependentOnErrorRetNilability); ok {
-		return u.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			u.IsNamedReturn == other.IsNamedReturn &&
-			u.RetStmt == other.RetStmt
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsNonErrorRetDependentOnErrorRetNilability) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfNonNil = u.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsNonErrorRetDependentOnErrorRetNilability as a Prestring
 func (u *UseAsNonErrorRetDependentOnErrorRetNilability) Prestring() Prestring {
-	retAnn := u.Ann.(*RetAnnotationKey)
-	return UseAsNonErrorRetDependentOnErrorRetNilabilityPrestring{
-		retAnn.FuncDecl.Name(),
-		retAnn.RetNum,
-		retAnn.FuncDecl.Type().(*types.Signature).Results().At(retAnn.RetNum).Name(),
-		retAnn.FuncDecl.Type().(*types.Signature).Results().Len() - 1,
-		u.IsNamedReturn,
-		u.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // UseAsNonErrorRetDependentOnErrorRetNilabilityPrestring is a Prestring storing the needed information to compactly encode a UseAsNonErrorRetDependentOnErrorRetNilability
@@ -1924,24 +1351,14 @@ type UseAsNonErrorRetDependentOnErrorRetNilabilityPrestring struct {
 }
 
 func (u UseAsNonErrorRetDependentOnErrorRetNilabilityPrestring) String() string {
-	via := ""
-	if u.IsNamedReturn {
-		via = fmt.Sprintf(" via named return `%s`", u.RetName)
-	}
-
-	var sb strings.Builder
-	fmt.Fprintf(&sb, "returned from `%s()`%s in position %d when the error return in position %d is not guaranteed to be non-nil through all paths",
-		u.FuncName, via, u.RetNum, u.ErrRetNum)
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // overriding position value to point to the raw return statement, which is the source of the potential error
 func (u *UseAsNonErrorRetDependentOnErrorRetNilability) customPos() (token.Pos, bool) {
-	if u.IsNamedReturn {
-		return u.RetStmt.Pos(), true
-	}
-	return 0, false
+	_ = "STUB: not implemented"
+	return *new(token.Pos), false
 }
 
 // UseAsErrorRetWithNilabilityUnknown is when a value flows to a point where it is returned from an error returning function
@@ -1954,31 +1371,20 @@ type UseAsErrorRetWithNilabilityUnknown struct {
 
 // equals returns true if the passed ConsumingAnnotationTrigger is equal to this one
 func (u *UseAsErrorRetWithNilabilityUnknown) equals(other ConsumingAnnotationTrigger) bool {
-	if other, ok := other.(*UseAsErrorRetWithNilabilityUnknown); ok {
-		return u.TriggerIfNonNil.equals(other.TriggerIfNonNil) &&
-			u.IsNamedReturn == other.IsNamedReturn &&
-			u.RetStmt == other.RetStmt
-	}
+	_ = "STUB: not implemented"
 	return false
 }
 
 // Copy returns a deep copy of this ConsumingAnnotationTrigger
 func (u *UseAsErrorRetWithNilabilityUnknown) Copy() ConsumingAnnotationTrigger {
-	copyConsumer := *u
-	copyConsumer.TriggerIfNonNil = u.TriggerIfNonNil.Copy().(*TriggerIfNonNil)
-	return &copyConsumer
+	_ = "STUB: not implemented"
+	return *new(ConsumingAnnotationTrigger)
 }
 
 // Prestring returns this UseAsErrorRetWithNilabilityUnknown as a Prestring
 func (u *UseAsErrorRetWithNilabilityUnknown) Prestring() Prestring {
-	retAnn := u.Ann.(*RetAnnotationKey)
-	return UseAsErrorRetWithNilabilityUnknownPrestring{
-		retAnn.FuncDecl.Name(),
-		retAnn.RetNum,
-		u.IsNamedReturn,
-		retAnn.FuncDecl.Type().(*types.Signature).Results().At(retAnn.RetNum).Name(),
-		u.String(),
-	}
+	_ = "STUB: not implemented"
+	return *new(Prestring)
 }
 
 // UseAsErrorRetWithNilabilityUnknownPrestring is a Prestring storing the needed information to compactly encode a UseAsErrorRetWithNilabilityUnknown
@@ -1991,22 +1397,14 @@ type UseAsErrorRetWithNilabilityUnknownPrestring struct {
 }
 
 func (u UseAsErrorRetWithNilabilityUnknownPrestring) String() string {
-	var sb strings.Builder
-	if u.IsNamedReturn {
-		fmt.Fprintf(&sb, "found in at least one path of `%s()` for named return `%s` in position %d", u.FuncName, u.RetName, u.RetNum)
-	} else {
-		fmt.Fprintf(&sb, "found in at least one path of `%s()` for return in position %d", u.FuncName, u.RetNum)
-	}
-	sb.WriteString(u.AssignmentStr)
-	return sb.String()
+	_ = "STUB: not implemented"
+	return ""
 }
 
 // overriding position value to point to the raw return statement, which is the source of the potential error
 func (u *UseAsErrorRetWithNilabilityUnknown) customPos() (token.Pos, bool) {
-	if u.IsNamedReturn {
-		return u.RetStmt.Pos(), true
-	}
-	return 0, false
+	_ = "STUB: not implemented"
+	return *new(token.Pos), false
 }
 
 // don't modify the ConsumeTrigger and ProduceTrigger objects after construction! Pointers
@@ -2065,95 +1463,36 @@ type ConsumeTrigger struct {
 }
 
 // equals compares two ConsumeTrigger pointers for equality
-func (c *ConsumeTrigger) equals(c2 *ConsumeTrigger) bool {
-	return c.Annotation.equals(c2.Annotation) &&
-		c.Expr == c2.Expr &&
-		c.Guards.Eq(c2.Guards) &&
-		c.GuardMatched == c2.GuardMatched
-
-}
+func (c *ConsumeTrigger) equals(c2 *ConsumeTrigger) bool { _ = "STUB: not implemented"; return false }
 
 // Copy returns a deep copy of the ConsumeTrigger
-func (c *ConsumeTrigger) Copy() *ConsumeTrigger {
-	copyTrigger := *c
-	copyTrigger.Annotation = c.Annotation.Copy()
-	copyTrigger.Guards = c.Guards.Copy()
-	return &copyTrigger
-}
+func (c *ConsumeTrigger) Copy() *ConsumeTrigger { _ = "STUB: not implemented"; return nil }
 
 // Pos returns the source position (e.g., line) of the consumer's expression. In special cases, such as named return, it
 // returns the position of the stored return AST node
-func (c *ConsumeTrigger) Pos() token.Pos {
-	if pos, ok := c.Annotation.customPos(); ok {
-		return pos
-	}
-	return c.Expr.Pos()
-}
+func (c *ConsumeTrigger) Pos() token.Pos { _ = "STUB: not implemented"; return *new(token.Pos) }
 
 // MergeConsumeTriggerSlices merges two slices of `ConsumeTrigger`s
 // its semantics are slightly unexpected only in its treatment of guarding:
 // it intersects guard sets
 func MergeConsumeTriggerSlices(left, right []*ConsumeTrigger) []*ConsumeTrigger {
-	var out []*ConsumeTrigger
-
-	addToOut := func(trigger *ConsumeTrigger) {
-		for i, outTrigger := range out {
-			if outTrigger.Annotation.equals(trigger.Annotation) &&
-				outTrigger.Expr == trigger.Expr {
-				// intersect guard sets - if a guard isn't present in both branches it can't
-				// be considered present before the branch
-				out[i] = &ConsumeTrigger{
-					Annotation:   outTrigger.Annotation.Copy(),
-					Expr:         outTrigger.Expr,
-					Guards:       outTrigger.Guards.Intersection(trigger.Guards),
-					GuardMatched: outTrigger.GuardMatched && trigger.GuardMatched,
-				}
-				return
-			}
-		}
-		out = append(out, trigger)
-	}
-
-	for _, l := range left {
-		addToOut(l)
-	}
-
-	for _, r := range right {
-		addToOut(r)
-	}
-
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }
+
+// intersect guard sets - if a guard isn't present in both branches it can't
+// be considered present before the branch
 
 // ConsumeTriggerSliceAsGuarded takes a slice of consume triggers,
 // and returns a new slice identical except that each trigger is guarded
 func ConsumeTriggerSliceAsGuarded(slice []*ConsumeTrigger, guards ...guard.Nonce) []*ConsumeTrigger {
-	var out []*ConsumeTrigger
-	for _, trigger := range slice {
-		out = append(out, &ConsumeTrigger{
-			Annotation:   trigger.Annotation.Copy(),
-			Expr:         trigger.Expr,
-			Guards:       trigger.Guards.Copy().Add(guards...),
-			GuardMatched: trigger.GuardMatched,
-		})
-	}
-	return out
+	_ = "STUB: not implemented"
+	return nil
 }
 
 // ConsumeTriggerSlicesEq returns true if the two passed slices of ConsumeTrigger contain the same elements
 // precondition: no duplications
 func ConsumeTriggerSlicesEq(left, right []*ConsumeTrigger) bool {
-	if len(left) != len(right) {
-		return false
-	}
-lsearch:
-	for _, l := range left {
-		for _, r := range right {
-			if l.equals(r) {
-				continue lsearch
-			}
-		}
-		return false
-	}
-	return true
+	_ = "STUB: not implemented"
+	return false
 }

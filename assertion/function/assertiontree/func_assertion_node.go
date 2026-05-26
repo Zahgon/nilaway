@@ -15,12 +15,10 @@
 package assertiontree
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
 
 	"go.uber.org/nilaway/annotation"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 type funcAssertionNode struct {
@@ -31,45 +29,16 @@ type funcAssertionNode struct {
 	args []ast.Expr
 }
 
-func (f *funcAssertionNode) MinimalString() string {
-	return fmt.Sprintf("func<%s>", f.decl.Name())
-}
+func (f *funcAssertionNode) MinimalString() string { _ = "STUB: not implemented"; return "" }
 
 // DefaultTrigger for a function node is that function's return annotation
 func (f *funcAssertionNode) DefaultTrigger() annotation.ProducingAnnotationTrigger {
-	if typeshelper.FuncNumResults(f.decl) != 1 {
-		panic("only functions with singular result should be entered into the assertion tree")
-	}
-
-	if f.decl.Type().(*types.Signature).Recv() != nil {
-		return &annotation.MethodReturn{
-			TriggerIfNilable: &annotation.TriggerIfNilable{
-				Ann: annotation.RetKeyFromRetNum(f.decl, 0)}}
-	}
-	return &annotation.FuncReturn{
-		TriggerIfNilable: &annotation.TriggerIfNilable{
-			Ann: annotation.RetKeyFromRetNum(f.decl, 0)}}
+	_ = "STUB: not implemented"
+	return *new(annotation.ProducingAnnotationTrigger)
 }
 
 // BuildExpr for a function node adds that function to `expr` as a method call
 func (f *funcAssertionNode) BuildExpr(expr ast.Expr) ast.Expr {
-	if f.Root() == nil {
-		panic("f.BuildExpr should only be called on nodes present in a valid assertion tree")
-	}
-	genFunc := func() ast.Expr {
-		if expr == nil {
-			return f.Root().GetDeclaringIdent(f.decl)
-		}
-		return &ast.SelectorExpr{
-			X:   expr,
-			Sel: f.Root().GetDeclaringIdent(f.decl),
-		}
-	}
-	return &ast.CallExpr{
-		Fun:      genFunc(),
-		Lparen:   0,
-		Args:     f.args,
-		Ellipsis: 0,
-		Rparen:   0,
-	}
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }

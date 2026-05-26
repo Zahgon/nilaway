@@ -218,7 +218,7 @@ type Set map[string]bool
 
 type MyAlias = Set
 
-//nilable(s)
+// nilable(s)
 func testAlias(s MyAlias) {
 	for myStr := range s {
 		print(myStr)

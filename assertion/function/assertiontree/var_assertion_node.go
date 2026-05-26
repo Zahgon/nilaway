@@ -15,12 +15,10 @@
 package assertiontree
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
 
 	"go.uber.org/nilaway/annotation"
-	"go.uber.org/nilaway/util/typeshelper"
 )
 
 type varAssertionNode struct {
@@ -30,56 +28,26 @@ type varAssertionNode struct {
 	decl *types.Var
 }
 
-func (v *varAssertionNode) MinimalString() string {
-	return fmt.Sprintf("var<%s>", v.decl.Name())
-}
+func (v *varAssertionNode) MinimalString() string { _ = "STUB: not implemented"; return "" }
 
 // DefaultTrigger for a varAssertionNode is special cased to read annotations for variables and
 // parameters, but otherwise is always NoVarAssign{}
 func (v *varAssertionNode) DefaultTrigger() annotation.ProducingAnnotationTrigger {
-	if v.Root() == nil {
-		panic("v.DefaultTrigger should only be called on nodes present in a valid assertion tree")
-	}
-	fdecl := v.Root().FuncObj()
-	if annotation.VarIsParam(fdecl, v.decl) {
-		return annotation.ParamAsProducer(fdecl, v.decl)
-	}
-	if annotation.VarIsRecv(fdecl, v.decl) {
-		return &annotation.MethodRecv{
-			TriggerIfNilable: &annotation.TriggerIfNilable{
-				Ann: &annotation.RecvAnnotationKey{FuncDecl: fdecl}},
-			VarDecl: v.decl,
-		}
-	}
-	if annotation.VarIsGlobal(v.decl) {
-		return &annotation.GlobalVarRead{
-			TriggerIfNilable: &annotation.TriggerIfNilable{
-				Ann: &annotation.GlobalVarAnnotationKey{
-					VarDecl: v.decl}}}
-	}
-
-	// By process of elimination we know that here `v` is a local variable
-
-	// if `v` is a struct (e.g., var s S), not a struct pointer, then analyze it for its fields. Note that here we don't
-	// want to analyze fields of an unassigned struct pointer, since at this point the pointer itself is nil.
-	// TODO: below logic won't be required once we standardize the expression `var s S` by replacing it with `S{}` in the
-	//  preprocessing phase
-	if !typeshelper.IsDeeplyPtr(v.decl.Type()) {
-		if structType := typeshelper.AsDeeplyStruct(v.decl.Type()); structType != nil {
-			if v.Root().functionContext.functionConfig.EnableStructInitCheck {
-				v.Root().addProductionForVarFieldNode(v, v.BuildExpr(nil))
-			}
-			return &annotation.ProduceTriggerNever{} // indicating that the struct object itself is not nil
-		}
-	}
-
-	return &annotation.NoVarAssign{ProduceTriggerTautology: &annotation.ProduceTriggerTautology{}, VarObj: v.decl}
+	_ = "STUB: not implemented"
+	return *new(annotation.ProducingAnnotationTrigger)
 }
+
+// By process of elimination we know that here `v` is a local variable
+
+// if `v` is a struct (e.g., var s S), not a struct pointer, then analyze it for its fields. Note that here we don't
+// want to analyze fields of an unassigned struct pointer, since at this point the pointer itself is nil.
+// TODO: below logic won't be required once we standardize the expression `var s S` by replacing it with `S{}` in the
+//  preprocessing phase
+
+// indicating that the struct object itself is not nil
 
 // BuildExpr for a varAssertionNode returns the underlying variable's AST node
 func (v *varAssertionNode) BuildExpr(_ ast.Expr) ast.Expr {
-	if v.Root() == nil {
-		panic("v.BuildExpr should only be called on nodes present in a valid assertion tree")
-	}
-	return v.Root().GetDeclaringIdent(v.decl)
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }

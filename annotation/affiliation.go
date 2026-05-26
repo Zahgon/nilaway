@@ -17,8 +17,6 @@ package annotation
 import (
 	"go/ast"
 	"go/types"
-
-	"go.uber.org/nilaway/guard"
 )
 
 // This file contains annotation-embdded obo the affiliations mechanism
@@ -35,19 +33,13 @@ type AffiliationPair struct {
 // DO NOT DO THIS to create any expressions that will enter unmatched triggers
 
 func (a AffiliationPair) interfaceMethodAsExpr() ast.Expr {
-	return &ast.Ident{
-		NamePos: a.InterfaceMethod.Pos(),
-		Name:    a.InterfaceMethod.Name(),
-		Obj:     nil,
-	}
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
 
 func (a AffiliationPair) implementingMethodAsExpr() ast.Expr {
-	return &ast.Ident{
-		NamePos: a.ImplementingMethod.Pos(),
-		Name:    a.ImplementingMethod.Name(),
-		Obj:     nil,
-	}
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
 
 // FullTriggerForInterfaceParamFlow takes the knowledge that `affiliation` represents an affiliation
@@ -57,26 +49,8 @@ func (a AffiliationPair) implementingMethodAsExpr() ast.Expr {
 // method has such a nilable parameter. This encodes "contravariance" of annotations for parameters.
 // Precondition: paramNum < numParams(affiliation.InterfaceMethod)
 func FullTriggerForInterfaceParamFlow(affiliation AffiliationPair, paramNum int) FullTrigger {
-	return FullTrigger{
-		Producer: &ProduceTrigger{
-			Annotation: &InterfaceParamReachesImplementation{
-				TriggerIfNilable: &TriggerIfNilable{
-					Ann: ParamKeyFromArgNum(affiliation.InterfaceMethod, paramNum)},
-				AffiliationPair: affiliation,
-			},
-			Expr: affiliation.interfaceMethodAsExpr(),
-		},
-		Consumer: &ConsumeTrigger{
-			Annotation: &MethodParamFromInterface{
-				TriggerIfNonNil: &TriggerIfNonNil{
-					Ann: ParamKeyFromArgNum(affiliation.ImplementingMethod, paramNum)},
-				AffiliationPair: affiliation,
-			},
-			Expr:         affiliation.implementingMethodAsExpr(),
-			Guards:       guard.NoGuards(),
-			GuardMatched: false,
-		},
-	}
+	_ = "STUB: not implemented"
+	return *new(FullTrigger)
 }
 
 // FullTriggerForInterfaceResultFlow takes the knowledge that `affiliation` represents an affiliation
@@ -86,24 +60,6 @@ func FullTriggerForInterfaceParamFlow(affiliation AffiliationPair, paramNum int)
 // has such a nilable result. This encodes "covariance" of annotations for results.
 // Precondition: retNum < numResults(affiliation.InterfaceMethod)
 func FullTriggerForInterfaceResultFlow(affiliation AffiliationPair, retNum int) FullTrigger {
-	return FullTrigger{
-		Producer: &ProduceTrigger{
-			Annotation: &MethodResultReachesInterface{
-				TriggerIfNilable: &TriggerIfNilable{
-					Ann: RetKeyFromRetNum(affiliation.ImplementingMethod, retNum)},
-				AffiliationPair: affiliation,
-			},
-			Expr: affiliation.implementingMethodAsExpr(),
-		},
-		Consumer: &ConsumeTrigger{
-			Annotation: &InterfaceResultFromImplementation{
-				TriggerIfNonNil: &TriggerIfNonNil{
-					Ann: RetKeyFromRetNum(affiliation.InterfaceMethod, retNum)},
-				AffiliationPair: affiliation,
-			},
-			Expr:         affiliation.interfaceMethodAsExpr(),
-			Guards:       guard.NoGuards(),
-			GuardMatched: false,
-		},
-	}
+	_ = "STUB: not implemented"
+	return *new(FullTrigger)
 }

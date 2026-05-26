@@ -30,22 +30,13 @@ const (
 
 // newContractVal converts a keyword string into the corresponding function ContractVal.
 func newContractVal(keyword string) ContractVal {
-	switch keyword {
-	case "nonnil":
-		return NonNil
-	case "false":
-		return False
-	case "true":
-		return True
-	case "_":
-		return Any
-	default:
-		// TODO: The ideal way to handle this is to keep track of this contract parsing error and
-		//  move on to the other contracts. But this may also require some refactoring of other
-		//  parts (we do not currently handle partial recoveries anyways)
-		panic("Unexpected keyword for ContractVal: " + keyword)
-	}
+	_ = "STUB: not implemented"
+	return *new(ContractVal)
 }
+
+// TODO: The ideal way to handle this is to keep track of this contract parsing error and
+//  move on to the other contracts. But this may also require some refactoring of other
+//  parts (we do not currently handle partial recoveries anyways)
 
 // Contract represents a function contract.
 type Contract struct {

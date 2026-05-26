@@ -15,7 +15,6 @@
 package assertiontree
 
 import (
-	"fmt"
 	"go/ast"
 	"go/types"
 
@@ -31,54 +30,28 @@ type fldAssertionNode struct {
 	functionContext FunctionContext
 }
 
-func (f *fldAssertionNode) MinimalString() string {
-	return fmt.Sprintf("fld<%s>", f.decl.Name())
-}
+func (f *fldAssertionNode) MinimalString() string { _ = "STUB: not implemented"; return "" }
 
 // GetAncestorVarAssertionNode returns the varAssertionNode node that is ancestor of the fldAssertionNode i.e. it is the
 // varAssertionNode that lies on the path from root node to fldAssertionNode. Thus, if the fldAssertionNode represents the
 // expression `o.f.g.h` then we return the varAssertion node corresponding to `o`
 // Returns nil otherwise if there is no ancestor varAssertion node
 func (f *fldAssertionNode) GetAncestorVarAssertionNode() *varAssertionNode {
-	var curNode AssertionNode = f
-	for curNode != nil {
-		curNode = curNode.Parent()
-
-		if res, ok := curNode.(*varAssertionNode); ok {
-			return res
-		}
-	}
+	_ = "STUB: not implemented"
 	return nil
 }
 
 // DefaultTrigger for a field node is that field's annotation
 func (f *fldAssertionNode) DefaultTrigger() annotation.ProducingAnnotationTrigger {
-	if f.functionContext.functionConfig.EnableStructInitCheck {
-		varNode := f.GetAncestorVarAssertionNode()
-		// If the field is not produced by a variable we default to the FieldAnnotationKey
-		// Similarly, for a global variable we default to the FieldAnnotationKey
-		if varNode != nil && !annotation.VarIsGlobal(varNode.decl) {
-			return &annotation.FldRead{
-				TriggerIfNilable: &annotation.TriggerIfNilable{
-					Ann: &annotation.EscapeFieldAnnotationKey{
-						FieldDecl: f.decl,
-					}}}
-		}
-	}
-	return &annotation.FldRead{
-		TriggerIfNilable: &annotation.TriggerIfNilable{
-			Ann: &annotation.FieldAnnotationKey{
-				FieldDecl: f.decl,
-			}}}
+	_ = "STUB: not implemented"
+	return *new(annotation.ProducingAnnotationTrigger)
 }
+
+// If the field is not produced by a variable we default to the FieldAnnotationKey
+// Similarly, for a global variable we default to the FieldAnnotationKey
 
 // BuildExpr for a field node adds that field access to the expression `expr`
 func (f *fldAssertionNode) BuildExpr(expr ast.Expr) ast.Expr {
-	if f.Root() == nil {
-		panic("f.BuildExpr should only be called on nodes present in a valid assertion tree")
-	}
-	return &ast.SelectorExpr{
-		X:   expr,
-		Sel: f.Root().GetDeclaringIdent(f.decl),
-	}
+	_ = "STUB: not implemented"
+	return *new(ast.Expr)
 }
